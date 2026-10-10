@@ -2,7 +2,7 @@
 *{box-sizing:border-box}
 body{margin:0;background:var(--fon);color:var(--tx);font:14px/1.45 "Courier New",ui-monospace,monospace}
 a{color:inherit}
-header{position:sticky;top:0;z-index:5;display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:10px 16px;background:#07080df2;border-bottom:2px solid #2a2410}
+header{position:sticky;top:0;z-index:5;display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:10px 16px;background:#07080d;border-bottom:2px solid #2a2410}
 .logo{color:var(--zol);text-decoration:none;font-weight:bold;letter-spacing:.3em;font-size:18px;text-shadow:0 0 10px #f2c23055}
 .logo small{margin-left:8px;font-size:11px;color:var(--tiho);letter-spacing:.2em}
 nav{display:flex;gap:6px}
@@ -52,7 +52,7 @@ input.poisk{width:100%;max-width:360px;background:var(--k);border:1px solid var(
 #info .x{float:right;background:none;border:0;color:var(--tiho);font:inherit;cursor:pointer}
 footer{text-align:center;color:var(--tiho);font-size:12px;padding:20px 16px;border-top:1px solid #1d1f2a}
 footer a{color:var(--zol)}
-@media (max-width:600px){.shapka h1{font-size:18px}.ic.big{width:72px;height:72px}.ic.big img{width:64px;height:64px}}
+@media (max-width:600px){header{position:static}.shapka h1{font-size:18px}.ic.big{width:72px;height:72px}.ic.big img{width:64px;height:64px}}
 #yazyk{margin-left:auto;display:flex;gap:2px}
 #yazyk button{background:none;border:1px solid var(--rama);color:var(--tiho);font:inherit;font-size:11px;padding:4px 7px;cursor:pointer}
 #yazyk button.akt{color:var(--zol);border-color:var(--zol)}
