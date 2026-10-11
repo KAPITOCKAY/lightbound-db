@@ -46,8 +46,49 @@ const STATY = ["mobility", "resilience", "recovery", "discipline", "intellect", 
 // ---------- состояние и ссылка ----------
 const novyjBild = () => ({sc: Object.fromEntries(SLOTY_A.map(s => [s, LB.B.ab[s][0].id])), asp: [], frag: [], w: {}, a: {}});
 let BS = novyjBild();
-const kod = o => btoa(unescape(encodeURIComponent(JSON.stringify(o)))).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
-const razkod = s => { try { return JSON.parse(decodeURIComponent(escape(atob(s.replace(/-/g, "+").replace(/_/g, "/"))))); } catch { return null; } };
+// короткая ссылка: индексы в списках игры в base36. Разделы через "_", поля через "."; старые ссылки (base64 JSON) тоже читаются
+const RAR4 = ["common", "uncommon", "rare", "legendary"];
+const n36 = (i) => i == null || i < 0 ? "" : i.toString(36), r36 = t => t === "" || t == null ? null : parseInt(t, 36);
+const EXW = () => Object.keys(ex).filter(k => ex[k].kind === "weapon"), EXA = () => Object.keys(ex).filter(k => ex[k].kind === "armor");
+const SETW = () => Object.keys(ws), SETA = () => Object.keys(AS), ARCH = () => Object.keys(A), MODS = () => Object.keys(LB.MOD);
+function kod(o) {
+  const sc = SLOTY_A.map(s => n36(LB.B.ab[s].findIndex(a => a.id === o.sc[s]))).join(".");
+  const asp = o.asp.map(id => n36(LB.B.asp.findIndex(a => a.id === id))).join(".");
+  const fr = o.frag.map(id => n36(LB.B.frag.findIndex(a => a.id === id))).join(".");
+  const w = SLOTY_W.map(sl => { const x = o.w[sl]; if (!x) return "";
+    if (x.k === "a") { const a = A[x.id], ix = (arr, v) => v == null ? "" : n36(arr.indexOf(v));
+      return ["a", n36(ARCH().indexOf(x.id)), ix(Object.keys(a.fr), x.fr), ix(a.el, x.el), ix(a.b, x.b), ix(a.m, x.m), ix(a.t1, x.t1), ix(a.t2, x.t2), ix(mw, x.mw)].join("."); }
+    if (x.k === "s") { const [st, k] = x.id.split("/"), it = ws[st].items[k];
+      return ["s", n36(SETW().indexOf(st)), n36(Object.keys(ws[st].items).indexOf(k)), x.t1 ? n36(it.traits[0].indexOf(x.t1)) : "", x.t2 ? n36(it.traits[1].indexOf(x.t2)) : ""].join("."); }
+    return ["e", n36(EXW().indexOf(x.id)), x.rt ? n36((EXR[x.id] || []).indexOf(x.rt)) : ""].join("."); });
+  const a = SLOTY_B.map(sl => { const x = o.a[sl]; if (!x) return ""; const inf = vesInfo(sl, x), st = inf.grp.map(g => n36(+x.st[g] || 0)), md = x.mod ? n36(MODS().indexOf(x.mod)) : "";
+    if (x.k === "g") return ["g", n36(x.id), n36(RAR4.indexOf(x.r || "legendary")), md, ...st].join(".");
+    return [x.k, n36((x.k === "s" ? SETA() : EXA()).indexOf(x.id)), md, ...st].join("."); });
+  return "1~" + [sc, asp, fr, ...w, ...a].join("_");
+}
+function razkod(str) {
+  if (!str) return null;
+  if (!str.startsWith("1~")) { try { return JSON.parse(decodeURIComponent(escape(atob(str.replace(/-/g, "+").replace(/_/g, "/"))))); } catch { return null; } }
+  try {
+    const p = str.slice(2).split("_"), f = t => (t || "").split(".");
+    const o = novyjBild();
+    f(p[0]).forEach((t, i) => { const a = LB.B.ab[SLOTY_A[i]][r36(t)]; if (a) o.sc[SLOTY_A[i]] = a.id; });
+    o.asp = f(p[1]).map(t => LB.B.asp[r36(t)]?.id).filter(Boolean);
+    o.frag = f(p[2]).map(t => LB.B.frag[r36(t)]?.id).filter(Boolean);
+    SLOTY_W.forEach((sl, i) => { const q = f(p[3 + i]); if (!q[0]) return;
+      if (q[0] === "a") { const id = ARCH()[r36(q[1])], a = A[id]; if (!a) return; const g = (arr, t) => t === "" ? undefined : arr[r36(t)];
+        o.w[sl] = {k: "a", id, fr: g(Object.keys(a.fr), q[2]) || Object.keys(a.fr)[0], el: g(a.el, q[3]) || a.el[0], b: g(a.b, q[4]), m: g(a.m, q[5]), t1: g(a.t1, q[6]), t2: g(a.t2, q[7]), mw: g(mw, q[8])}; }
+      else if (q[0] === "s") { const st = SETW()[r36(q[1])], k = st && Object.keys(ws[st].items)[r36(q[2])]; if (!k) return; const it = ws[st].items[k];
+        o.w[sl] = {k: "s", id: st + "/" + k, t1: q[3] === "" ? undefined : it.traits[0][r36(q[3])], t2: q[4] === "" ? undefined : it.traits[1][r36(q[4])]}; }
+      else { const id = EXW()[r36(q[1])]; if (!id) return; o.w[sl] = {k: "e", id, rt: q[2] === "" ? undefined : (EXR[id] || [])[r36(q[2])]}; } });
+    SLOTY_B.forEach((sl, i) => { const q = f(p[6 + i]); if (!q[0]) return; let x;
+      if (q[0] === "g") x = {k: "g", id: r36(q[1]), r: RAR4[r36(q[2])] || "legendary", mod: q[3] === "" ? null : MODS()[r36(q[3])], vals: q.slice(4)};
+      else x = {k: q[0], id: (q[0] === "s" ? SETA() : EXA())[r36(q[1])], mod: q[2] === "" ? null : MODS()[r36(q[2])], vals: q.slice(3)};
+      const inf = vesInfo(sl, x); if (!inf || !inf.grp) return;
+      x.st = Object.fromEntries(inf.grp.map((g, j) => [g, r36(x.vals[j]) || 0])); delete x.vals; o.a[sl] = x; });
+    return o;
+  } catch { return null; }
+}
 const sohranit = () => history.replaceState(null, "", "#/build/" + kod(BS));
 
 // ---------- расчёт статов (функции Gc/Kc/qc/Jc игры) ----------
