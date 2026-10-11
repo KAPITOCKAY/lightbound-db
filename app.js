@@ -22,7 +22,7 @@ const U = {
     highlight: "Подсветить в колонках", otherSet: "Другие стволы сета", exFixed: "У экзотиков ролл фиксированный: что выпало, то и лучшее. Гудроллов-трейтов у них нет.",
     godIntro: "18 пар трейтов, которые игра сама отмечает как «God Roll». Под каждым — пушки, на которые он может выпасть (нажмите, чтобы открыть).",
     types: "Типы оружия (случайная легендарка)", named: "Именные стволы", exArmor: "Экзотическая броня", bestStats: "лучшие статы",
-    tapArmor: "Нажмите на предмет, чтобы прочитать его экзотик-перк.", armorSets: "Сеты брони",
+    tapArmor: "Нажмите на предмет, чтобы прочитать его описание и перк.", armorSets: "Сеты брони",
     armorGod: s => `Гудролл (наш совет): максимум в <b>${s}</b> — сет роллится в эти статы.`, mods: "Моды брони",
     groups: "Статы обычной брони роллятся группами", close: "Закрыть"},
   en: {dmg: "Damage", perShot: "Per shot", head: "Precision", rpmL: "RPM", magL: "Magazine", dpsL: "DPS", dpsHL: "Precision DPS", dpsML: "Sustained DPS", weapon: "Weapon", frameL: "Frame",
@@ -66,9 +66,9 @@ const U = {
     armorGod: s => `God Roll (unser Tipp): maximal <b>${s}</b> — das Set rollt in diese Werte.`, mods: "Rüstungsmods",
     groups: "Normale Rüstungswerte rollen in Gruppen", close: "Schließen"},
 };
-Object.assign(U.ru, {exoticsH: "Экзотики", tapPerk: "Нажмите на перк: тут появится описание, а сам перк попадёт в ваш ролл. Статы справа пересчитаются.", yourRoll: "Ваш ролл", rollHint: "Выберите по перку в колонках — соберётся ролл.", isGod: "Это гудролл", reset: "Сбросить", starHint2: "★ — перк гудролла. Наведите на иконку, чтобы увидеть название.", useGod: "Собрать этот ролл", more: "Подробнее", statsL: "Статы"});
-Object.assign(U.en, {exoticsH: "Exotics", tapPerk: "Tap a perk: its description shows here and it goes into your roll. The stats update.", yourRoll: "Your roll", rollHint: "Pick one perk per column to build a roll.", isGod: "This is a god roll", reset: "Reset", starHint2: "★ — god-roll perk. Hover an icon to see its name.", useGod: "Build this roll", more: "More", statsL: "Stats"});
-Object.assign(U.de, {exoticsH: "Exotics", tapPerk: "Tippe auf einen Perk: hier erscheint die Beschreibung, und er kommt in deinen Roll. Die Werte aktualisieren sich.", yourRoll: "Dein Roll", rollHint: "Wähle je einen Perk pro Spalte für deinen Roll.", isGod: "Das ist ein God Roll", reset: "Zurücksetzen", starHint2: "★ — God-Roll-Perk. Fahre über ein Icon für den Namen.", useGod: "Diesen Roll bauen", more: "Mehr", statsL: "Werte"});
+Object.assign(U.ru, {tapItem: "Нажмите на предмет, чтобы прочитать описание.", exoticsH: "Экзотики", tapPerk: "Нажмите на перк: тут появится описание, а сам перк попадёт в ваш ролл. Статы справа пересчитаются.", yourRoll: "Ваш ролл", rollHint: "Выберите по перку в колонках — соберётся ролл.", isGod: "Это гудролл", reset: "Сбросить", starHint2: "★ — перк гудролла. Наведите на иконку, чтобы увидеть название.", useGod: "Собрать этот ролл", more: "Подробнее", statsL: "Статы"});
+Object.assign(U.en, {tapItem: "Tap an item to read about it.", exoticsH: "Exotics", tapPerk: "Tap a perk: its description shows here and it goes into your roll. The stats update.", yourRoll: "Your roll", rollHint: "Pick one perk per column to build a roll.", isGod: "This is a god roll", reset: "Reset", starHint2: "★ — god-roll perk. Hover an icon to see its name.", useGod: "Build this roll", more: "More", statsL: "Stats"});
+Object.assign(U.de, {tapItem: "Tippe auf einen Gegenstand für die Beschreibung.", exoticsH: "Exotics", tapPerk: "Tippe auf einen Perk: hier erscheint die Beschreibung, und er kommt in deinen Roll. Die Werte aktualisieren sich.", yourRoll: "Dein Roll", rollHint: "Wähle je einen Perk pro Spalte für deinen Roll.", isGod: "Das ist ein God Roll", reset: "Zurücksetzen", starHint2: "★ — God-Roll-Perk. Fahre über ein Icon für den Namen.", useGod: "Diesen Roll bauen", more: "Mehr", statsL: "Werte"});
 const SLOV = { // короткие игровые слова
   ru: {kinetic: "Кинетика", arc: "Молния", ember: "Огонь", void: "Пустота", helmet: "Шлем", gauntlets: "Перчатки", chest: "Нагрудник", legs: "Ботинки", cloak: "Плащ",
     primary: "основные", special: "особые", heavy: "тяжёлые", range: "Дальность", stability: "Стабильность", handling: "Удобство", reload: "Перезарядка", magnetism: "Магнетизм",
@@ -154,7 +154,7 @@ const godSpisok = gs => gs.length ? gs.map(g => `<div class="gr"><b class="n">�
 // ---------- страница оружия: перки иконками, справа описание, ролл, статы и урон ----------
 let ROLL = {}, ROLL_URL = "", FOKUS = null;
 const pk = (col, id, fixed) => { const g = zv(id), sel = ROLL[col] === id, n = pName(id);
-  return `<button class="pk${g ? " god" : ""}${sel ? " vyb" : ""}${fixed ? " fix" : ""}" data-pk="${col}|${id}" title="${esc(n)}" aria-label="${esc(n)}">${pi(id)}${g ? "<i>★</i>" : ""}</button>`; };
+  return `<button class="pk${g ? " god" : ""}${sel && !fixed ? " vyb" : ""}${fixed ? " fix" : ""}" data-pk="${col}|${id}" title="${esc(n)}" aria-label="${esc(n)}">${pi(id)}${g ? "<i>★</i>" : ""}</button>`; };
 const wkol = (col, title, ids, sub, fixed) => { ids = ids.filter(x => !/:(null|undefined)?$/.test(x)); ids = [...ids.filter(zv), ...ids.filter(x => !zv(x))];
   if (fixed && ids.length === 1 && ROLL[col] == null) ROLL[col] = ids[0];
   return `<div class="wk${sub === 0 ? " pusto" : ""}${ids.length > 14 ? " shir" : ids.length > 8 ? " dve" : ""}"><b>${title}</b>${sub != null ? `<small>${u("drops")(sub)}</small>` : ""}<div class="wk-g">${ids.map(x => pk(col, x, fixed)).join("") || '<span class="tiho">—</span>'}</div></div>`; };
@@ -259,7 +259,6 @@ function armorKarta(id) {
 function stranicaBronya() {
   const exArm = Object.entries(ex).filter(([, e]) => e.kind === "armor");
   const mods = Object.keys(P).filter(x => x.startsWith("mods:"));
-  AFOK = AFOK || "armor:" + exArm[0][0];
   const slots = ["helmet", "gauntlets", "chest", "legs", "cloak"];
   const plit = ([k, e]) => `<button class="plit${AFOK === "armor:" + k ? " vyb" : ""}" data-af="armor:${k}" data-st="--c:${rc.exotic}"><span class="plit-ik"><img src="img/${e.icon}.png" alt="" loading="lazy"></span><b>${esc(e.name)}</b><small>${e.stats.map(x => sl(x).slice(0, 3)).join(" + ")}</small></button>`;
   const ikon = id => `<button class="pk${AFOK === id ? " vyb" : ""}" data-af="${id}" title="${esc(pName(id))}">${pi(id)}</button>`;
@@ -271,7 +270,7 @@ function stranicaBronya() {
       <div class="setk-b">${s2.bonuses.map(b => `<button class="${AFOK === "set_bonuses:" + b ? "vyb" : ""}" data-af="set_bonuses:${b}">${pi("set_bonuses:" + b)}<span>${esc(pName("set_bonuses:" + b))}</span></button>`).join("")}</div></div>`).join("")}</div>
     <h2>${u("mods")}</h2><div class="wkols">${["helmet", "gauntlets", "chest", "legs"].map(s2 => `<div class="wk"><b>${sl(s2)}</b><div class="wk-g">${mods.filter(m => P[m].s?.includes(s2)).map(ikon).join("")}</div></div>`).join("")}</div>
     <p class="tiho">${u("groups")}: ${LB.groups.map(g => g.map(sl).join("/")).join(" · ")}.</p>`;
-  return `<div class="wgrid bgrid"><div class="wmain">${levo}</div><aside class="wside"><div class="wcard">${armorKarta(AFOK)}</div></aside></div>`;
+  return `<div class="wgrid bgrid"><div class="wmain">${levo}</div><aside class="wside"><div class="wcard">${AFOK ? armorKarta(AFOK) : `<p class="tiho">${u("tapArmor")}</p>`}</div></aside></div>`;
 }
 
 // ---------- урон ----------
@@ -336,12 +335,12 @@ function stranicaKol(sec) {
   const chips = `<div class="panel">${K.map(s => `<a class="chip${s === S ? " akt" : ""}" href="#/col/${s.id}">${u("secs")[s.id]} <span class="tiho">${s.items.length}</span></a>`).join("")}</div>`;
   if (S.id === "lore") return `<h2>${u("col")}</h2>${chips}<h2>${u("secs")[S.id]}</h2><p class="tiho">${u("loreNote")}</p>
     ${S.items.map(it => `<details class="lore"><summary>${ik40(it.mi)}<b>${esc(it.n)}</b></summary><p>${esc(it.d)}</p></details>`).join("")}`;
-  const fok = S.items.find(it => it.id === KFOK) || S.items[0];
+  const fok = S.items.find(it => it.id === KFOK);
   const plit = it => { const kk = `K|${S.id}|${it.id}`;
     return `<button class="plit${it === fok ? " vyb" : ""}" data-kf="${esc(it.id)}" data-st="--c:${rc[it.r] || "var(--rama)"}"><span class="plit-ik${it.bg ? " em" : ""}"${it.bg ? ` data-st="--bg:${it.bg}"` : ""}>${kolKart(it)}</span><b>${esc(tx(kk, 0, it.n))}</b>${it.r ? `<small data-st="color:${rc[it.r]}">${u("rar")[it.r]}</small>` : ""}</button>`; };
   const shells = S.id === "shells" ? `<h3>${u("shellPerks")}</h3><div class="para">${Object.keys(P).filter(x => x.startsWith("wispperk:")).map(x => perk(x)).join("")}</div>` : "";
   return `<h2>${u("col")}</h2>${chips}<div class="wgrid bgrid"><div class="wmain"><h2>${u("secs")[S.id]}</h2><div class="plitki">${S.items.map(plit).join("")}</div>${shells}</div>
-    <aside class="wside"><div class="wcard" id="kolKarta">${predmet(S.id, fok)}</div></aside></div>`;
+    <aside class="wside"><div class="wcard" id="kolKarta">${fok ? predmet(S.id, fok) : `<p class="tiho">${u("tapItem")}</p>`}</div></aside></div>`;
 }
 
 function pokaz() {
