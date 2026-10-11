@@ -18,7 +18,6 @@ h3{margin:18px 0 8px;font-size:13px;letter-spacing:.15em;color:var(--tiho);text-
 input.poisk{width:100%;max-width:360px;background:var(--k);border:1px solid var(--rama);color:var(--tx);padding:7px 10px;font:inherit}
 .g{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:8px}
 .kar{display:flex;gap:10px;align-items:center;background:var(--k);border:1px solid var(--rama);border-left:3px solid var(--c,var(--leg));padding:8px;text-decoration:none}
-.kar:hover{border-color:var(--zol)}
 .kar b{display:block;color:#fff}
 .kar small{color:var(--tiho);text-transform:uppercase;font-size:11px}
 .ic{flex:none;width:56px;height:56px;display:grid;place-items:center;background:#0b0c12;border:1px solid var(--rama)}
@@ -32,7 +31,6 @@ input.poisk{width:100%;max-width:360px;background:var(--k);border:1px solid var(
 .kol{flex:1 0 150px;background:var(--k);border:1px solid var(--rama);padding:6px}
 .kol>i{display:block;font-style:normal;font-size:11px;letter-spacing:.12em;color:var(--tiho);text-transform:uppercase;margin-bottom:6px}
 .perk{display:flex;align-items:center;gap:6px;width:100%;background:none;border:1px solid transparent;color:var(--tx);font:inherit;font-size:12px;text-align:left;padding:3px;cursor:pointer}
-.perk:hover{border-color:var(--rama)}
 .perk.god{border-color:#6b5512;background:#1c170a}
 .perk.vybor{border-color:var(--zol);background:#2a210a;color:#fff}
 .perk.tusk{opacity:.3}
@@ -58,7 +56,6 @@ footer a{color:var(--zol)}
 #yazyk button.akt{color:var(--zol);border-color:var(--zol)}
 .minis{display:flex;flex-wrap:wrap;gap:6px}
 .mini{display:flex;flex-direction:column;align-items:center;gap:2px;width:92px;padding:6px 4px;background:#0b0c12;border:1px solid var(--rama);text-decoration:none;font-size:11px;text-align:center}
-.mini:hover{border-color:var(--zol)}
 .mini.zol{border-color:#6b5512}
 .mini img{width:56px;height:56px;object-fit:contain;image-rendering:pixelated}
 .gr h3{margin:10px 0 6px;font-size:11px}
@@ -103,7 +100,6 @@ img.pi{object-fit:contain;background:#1d2130}
 .sck span{text-align:center;line-height:1.15;margin-top:2px}
 .sck i{position:absolute;top:2px;right:3px;font-style:normal;font-size:9px;color:var(--zol)}
 .sck.akt{opacity:1;border-color:var(--zol);box-shadow:0 0 0 1px var(--zol) inset}
-.sck:hover{opacity:1}
 #scOpis{margin-top:8px;min-height:2.6em}
 .bstaty{display:flex;flex-wrap:wrap;gap:8px;margin:6px 0}
 .bstaty label{display:flex;flex-direction:column;font-size:11px;color:var(--tiho);text-transform:uppercase}
@@ -134,7 +130,6 @@ img.pi{object-fit:contain;background:#1d2130}
 @media (max-width:860px){.wk-g{grid-template-columns:repeat(auto-fill,40px)}}
 .pk{position:relative;width:40px;height:40px;border-radius:50%;border:2px solid #2c3042;background:#0b0c12;display:grid;place-items:center;cursor:pointer;padding:0}
 .pk .pi{transform:scale(1.15)}
-.pk:hover{border-color:#8b8a99}
 .pk.god{border-color:#6b5a1c}
 .pk.vyb{border-color:var(--zol);box-shadow:0 0 0 2px #f2c23055,0 0 12px #f2c23066;background:#2a2410}
 .pk i{position:absolute;right:-4px;top:-6px;font-style:normal;color:var(--zol);font-size:12px;text-shadow:0 0 3px #000}
@@ -176,7 +171,6 @@ details.podr>summary{cursor:pointer;color:var(--zol);letter-spacing:.15em;text-t
 .panel select{background:var(--k);color:var(--tx);border:1px solid var(--rama);padding:7px 8px;font:inherit;font-size:13px}
 .plitki{display:grid;grid-template-columns:repeat(auto-fill,minmax(118px,1fr));gap:8px}
 .plit{display:flex;flex-direction:column;align-items:center;text-align:center;gap:4px;background:var(--k);border:1px solid var(--rama);border-bottom:3px solid var(--c,var(--leg));padding:10px 6px 8px;text-decoration:none;color:var(--tx);font:inherit;cursor:pointer}
-.plit:hover{border-color:var(--zol);border-bottom-color:var(--c,var(--leg))}
 .plit.vyb{border-color:var(--zol);background:#1d1a10}
 .plit-ik{width:64px;height:64px;display:grid;place-items:center;background:#0b0c12;border:1px solid var(--rama)}
 .plit-ik img{width:56px;height:56px;image-rendering:pixelated;object-fit:contain}
@@ -202,7 +196,6 @@ details.podr>summary{cursor:pointer;color:var(--zol);letter-spacing:.15em;text-t
 .mts{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
 .mt{display:flex;flex-direction:column;align-items:center;width:70px;padding:4px 2px;background:#0b0c12;border:1px solid var(--rama);border-bottom:2px solid var(--leg);text-decoration:none;font-size:9px;text-align:center;line-height:1.15;color:var(--tx)}
 .mt.zol{border-bottom-color:var(--zol)}
-.mt:hover{border-color:var(--zol)}
 .mt img{width:44px;height:44px;object-fit:contain;image-rendering:pixelated}
 /* урон */
 .tbl{max-height:75vh;overflow:auto;border:1px solid var(--rama)}
@@ -219,3 +212,6 @@ details.podr>summary{cursor:pointer;color:var(--zol);letter-spacing:.15em;text-t
 .tbl td:nth-child(1),.tbl td:nth-child(2){white-space:normal;min-width:120px}
 .tbl th{white-space:normal;vertical-align:bottom;font-size:11px}
 .tbl th,.tbl td{padding:5px 6px}
+
+/* подсветка при наведении только там, где есть мышь: на телефоне после нажатия рамка не «залипает» */
+@media (hover:hover){.kar:hover{border-color:var(--zol)}.perk:hover{border-color:var(--rama)}.mini:hover{border-color:var(--zol)}.sck:hover{opacity:1}.pk:hover{border-color:#8b8a99}.plit:hover{border-color:var(--zol);border-bottom-color:var(--c,var(--leg))}.mt:hover{border-color:var(--zol)}}
