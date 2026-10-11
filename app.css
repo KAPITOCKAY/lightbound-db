@@ -88,3 +88,35 @@ img.pi{object-fit:contain;background:#1d2130}
 .tbl tr.my td{background:#2a210a}
 .tbl a{text-decoration:none}
 .tk{display:inline-flex;align-items:center;gap:8px}.tk img{width:40px;height:40px;object-fit:contain;image-rendering:pixelated;background:#0b0c12;border:1px solid var(--rama)}
+/* конструктор билда */
+.bild{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:16px;align-items:start}
+.bpravo{position:sticky;top:70px}
+@media (max-width:860px){.bild{grid-template-columns:minmax(0,1fr)}.bpravo{position:static;order:-1}}
+.bblok{background:var(--k);border:1px solid var(--rama);padding:10px;margin-bottom:10px}
+.bblok h3{margin-top:0}
+.bblok .kar{margin-bottom:8px}
+.bsel{width:100%;max-width:420px;background:#0b0c12;color:var(--tx);border:1px solid var(--rama);padding:6px;font:inherit;font-size:13px;margin-bottom:8px}
+.scr{margin:8px 0}.scr>i{display:block;font-style:normal;font-size:11px;letter-spacing:.12em;color:var(--tiho);text-transform:uppercase;margin-bottom:4px}
+.scg{display:flex;flex-wrap:wrap;gap:6px}
+.sck{position:relative;display:flex;flex-direction:column;align-items:center;width:84px;background:#0b0c12;border:1px solid var(--rama);color:var(--tx);padding:4px;font:inherit;font-size:10px;cursor:pointer;opacity:.6}
+.sck img{width:44px;height:44px;image-rendering:pixelated}
+.sck span{text-align:center;line-height:1.15;margin-top:2px}
+.sck i{position:absolute;top:2px;right:3px;font-style:normal;font-size:9px;color:var(--zol)}
+.sck.akt{opacity:1;border-color:var(--zol);box-shadow:0 0 0 1px var(--zol) inset}
+.sck:hover{opacity:1}
+#scOpis{margin-top:8px;min-height:2.6em}
+.bstaty{display:flex;flex-wrap:wrap;gap:8px;margin:6px 0}
+.bstaty label{display:flex;flex-direction:column;font-size:11px;color:var(--tiho);text-transform:uppercase}
+.bstaty input{width:80px;background:#0b0c12;color:var(--tx);border:1px solid var(--rama);padding:4px;font:inherit}
+.plokho{color:#e0605a!important}
+.btab{width:100%;border-collapse:collapse;font-size:12px}.btab td{padding:3px 4px;border-bottom:1px solid var(--rama)}.btab td:last-child{text-align:right;color:#fff;white-space:nowrap}
+.bit{display:flex;gap:8px;align-items:center;margin:6px 0}.bit b{color:#fff}
+.mperk{display:flex;gap:2px;flex-wrap:wrap}.mperk .perk{width:auto;padding:1px}
+.perk.vybor{border-color:var(--zol);background:#2a2410}
+.itog .stat span:last-child{min-width:86px;text-align:right}
+.bblok .kol{max-height:300px;overflow-y:auto}
+.itog .stat{grid-template-columns:96px 1fr 64px;font-size:12px}
+.itog .stat small{display:none}
+.itog .stat span:last-child{min-width:0;white-space:nowrap}
+.tir{color:var(--zol);font-weight:normal}
+.blevo,.bpravo{min-width:0}

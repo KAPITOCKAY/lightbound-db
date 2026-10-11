@@ -289,9 +289,9 @@ function pokaz() {
   ZV = GOD_PERKS;
   const v = r === "w" ? (p[0] === "a" && A[p[1]] ? stranicaTip(p[1], p[2]) : p[0] === "s" && ws[p[1]]?.items[p[2]] ? stranicaSet(p[1], p[2])
     : p[0] === "e" && ex[p[1]] ? stranicaEkzotik(p[1]) : stranicaOruzhie())
-    : r === "god" ? stranicaGod() : r === "armor" ? stranicaBronya() : r === "col" ? stranicaKol(p[0]) : r === "dmg" ? stranicaUron() : stranicaOruzhie();
+    : r === "build" ? stranicaBild(p[0]) : r === "god" ? stranicaGod() : r === "armor" ? stranicaBronya() : r === "col" ? stranicaKol(p[0]) : r === "dmg" ? stranicaUron() : stranicaOruzhie();
   $("#app").innerHTML = v; stili($("#app"));
-  document.querySelectorAll("nav a").forEach(a => { a.classList.toggle("akt", a.dataset.r === (r === "w" ? "" : r || "")); a.textContent = u(a.dataset.t); });
+  document.querySelectorAll("nav a").forEach(a => { a.classList.toggle("akt", a.dataset.r === (r === "w" ? "" : r || "")); a.textContent = u(a.dataset.t) || ub(a.dataset.t); });
   document.querySelectorAll("#yazyk button").forEach(b => b.classList.toggle("akt", b.dataset.lang === lang));
   document.documentElement.lang = lang;
   $("#podval").innerHTML = FOOT[lang];
