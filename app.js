@@ -66,6 +66,9 @@ const U = {
     armorGod: s => `God Roll (unser Tipp): maximal <b>${s}</b> — das Set rollt in diese Werte.`, mods: "Rüstungsmods",
     groups: "Normale Rüstungswerte rollen in Gruppen", close: "Schließen"},
 };
+Object.assign(U.ru, {tapPerk: "Нажмите на перк: тут появится описание, а сам перк попадёт в ваш ролл. Статы справа пересчитаются.", yourRoll: "Ваш ролл", rollHint: "Выберите по перку в колонках — соберётся ролл.", isGod: "Это гудролл", reset: "Сбросить", starHint2: "★ — перк гудролла. Наведите на иконку, чтобы увидеть название.", useGod: "Собрать этот ролл", more: "Подробнее", statsL: "Статы"});
+Object.assign(U.en, {tapPerk: "Tap a perk: its description shows here and it goes into your roll. The stats update.", yourRoll: "Your roll", rollHint: "Pick one perk per column to build a roll.", isGod: "This is a god roll", reset: "Reset", starHint2: "★ — god-roll perk. Hover an icon to see its name.", useGod: "Build this roll", more: "More", statsL: "Stats"});
+Object.assign(U.de, {tapPerk: "Tippe auf einen Perk: hier erscheint die Beschreibung, und er kommt in deinen Roll. Die Werte aktualisieren sich.", yourRoll: "Dein Roll", rollHint: "Wähle je einen Perk pro Spalte für deinen Roll.", isGod: "Das ist ein God Roll", reset: "Zurücksetzen", starHint2: "★ — God-Roll-Perk. Fahre über ein Icon für den Namen.", useGod: "Diesen Roll bauen", more: "Mehr", statsL: "Werte"});
 const SLOV = { // короткие игровые слова
   ru: {kinetic: "Кинетика", arc: "Молния", ember: "Огонь", void: "Пустота", helmet: "Шлем", gauntlets: "Перчатки", chest: "Нагрудник", legs: "Ботинки", cloak: "Плащ",
     primary: "основные", special: "особые", heavy: "тяжёлые", range: "Дальность", stability: "Стабильность", handling: "Удобство", reload: "Перезарядка", magnetism: "Магнетизм",
@@ -146,52 +149,84 @@ const godSpisok = gs => gs.length ? gs.map(g => `<div class="gr"><b class="n">�
   <button class="chip" data-god="${g.a},${g.b}">${u("highlight")}</button></div>`).join("")
   : `<p class="tiho">${u("noGod")}</p>`;
 
+// ---------- страница оружия: перки иконками, справа описание, ролл, статы и урон ----------
+let ROLL = {}, ROLL_URL = "", FOKUS = null;
+const pk = (col, id, fixed) => { const g = zv(id), sel = ROLL[col] === id, n = pName(id);
+  return `<button class="pk${g ? " god" : ""}${sel ? " vyb" : ""}${fixed ? " fix" : ""}" data-pk="${col}|${id}" title="${esc(n)}" aria-label="${esc(n)}">${pi(id)}${g ? "<i>★</i>" : ""}</button>`; };
+const wkol = (col, title, ids, sub, fixed) => { ids = ids.filter(x => !/:(null|undefined)?$/.test(x)); ids = [...ids.filter(zv), ...ids.filter(x => !zv(x))];
+  if (fixed && ids.length === 1 && ROLL[col] == null) ROLL[col] = ids[0];
+  return `<div class="wk${sub === 0 ? " pusto" : ""}${ids.length > 14 ? " shir" : ids.length > 8 ? " dve" : ""}"><b>${title}</b>${sub != null ? `<small>${u("drops")(sub)}</small>` : ""}<div class="wk-g">${ids.map(x => pk(col, x, fixed)).join("") || '<span class="tiho">—</span>'}</div></div>`; };
+function statyRoll(arch) {
+  const plus = {};
+  for (const id of Object.values(ROLL)) for (const [k, v] of Object.entries(P[id]?.st || {})) plus[k] = (plus[k] || 0) + v;
+  return Object.entries(A[arch].base).map(([k, v]) => { const d = plus[k] || 0, t = Math.max(0, Math.min(100, v + d));
+    return `<div class="stat"><span>${sl(k)}</span><span><b data-st="width:${Math.min(v, t)}%"></b>${d > 0 ? `<b class="plus" data-st="width:${t - v}%"></b>` : d < 0 ? `<b class="minus" data-st="width:${v - t}%"></b>` : ""}</span><span>${t}${d ? ` <small class="${d > 0 ? "zel" : "plokho"}">${d > 0 ? "+" : ""}${d}</small>` : ""}</span></div>`; }).join("");
+}
+function bokovaya(arch, frame) {
+  const fr = ROLL.fr ? ROLL.fr.slice(("frames:" + arch + "_").length) : frame, ur = URON[`${arch}_${fr}`];
+  const mp = Object.values(ROLL).reduce((a, id) => a + (P[id]?.mp || 0), 0);
+  const f = FOKUS && P[FOKUS];
+  const fok = f ? `<div class="wfok"><div>${pi(FOKUS)}<b>${esc(pName(FOKUS))}</b>${f.e ? " · " + elem(f.e) : ""}</div><p>${esc(tx(trKey(FOKUS), 1, f.d))}</p></div>` : `<p class="tiho">${u("tapPerk")}</p>`;
+  const sel = Object.values(ROLL).filter(Boolean);
+  const t1 = ROLL.t1?.split(":")[1], t2 = ROLL.t2?.split(":")[1], gr = t1 && t2 && god.find(g => g.a === t1 && g.b === t2);
+  return `<aside class="wside"><div class="wcard">${fok}</div>
+    <div class="wcard"><h3>${u("yourRoll")}</h3>${sel.length ? `<div class="wroll">${sel.map(id => `<button data-p="${id}">${pi(id)}<span>${esc(pName(id))}</span></button>`).join("")}</div>` : `<p class="tiho">${u("rollHint")}</p>`}
+      ${gr ? `<p class="zolt">★ ${u("isGod")}: ${esc(gName(gr))}</p>` : ""}${sel.length ? `<button class="chip" data-rollreset="1">${u("reset")}</button>` : ""}</div>
+    <div class="wcard"><h3>${u("statsL")}</h3>${statyRoll(arch)}</div>
+    ${ur ? `<div class="wcard"><h3>${u("dmg")}</h3><table class="btab">
+      <tr><td>${u("perShot")}</td><td>${yach(ur, "v")}</td></tr><tr><td>${u("head")}</td><td>${yach(ur, "k")}</td></tr><tr><td>${u("rpmL")}</td><td>${ur.rpm}</td></tr>
+      <tr><td>${u("magL")}</td><td>${mp ? `${Math.round(ur.mag * (1 + mp))} <small class="zel">(${ur.mag})</small>` : ur.mag}</td></tr>
+      <tr><td>${u("dpsL")}</td><td>${ur.dps}</td></tr><tr><td>${u("dpsML")}</td><td>${ur.dpsM}</td></tr></table></div>` : ""}</aside>`;
+}
+const wStranica = (shapka, filtry, cols, arch, frame, niz) => `${shapka}${filtry}<div class="wgrid"><div class="wmain"><div class="wkols">${cols}</div>
+  <p class="tiho">${u("starHint2")}</p></div>${bokovaya(arch, frame)}</div>${niz}`;
+const godKarty = gs => gs.length ? `<div class="gods">${gs.map(g => `<div class="godk"><b>★ ${esc(gName(g))}</b>
+  <div class="godp">${["a", "b"].map(x => `<button data-p="traits:${g[x]}">${pi("traits:" + g[x])}<span>${esc(pName("traits:" + g[x]))}</span></button>`).join("")}</div>
+  <p>${esc(gWhy(g))}</p><button class="chip" data-god="${g.a},${g.b}">${u("useGod")}</button></div>`).join("")}</div>` : `<p class="tiho">${u("noGod")}</p>`;
+const podrobnee = html => `<details class="podr"><summary>${u("more")}</summary>${html}</details>`;
+
 function stranicaTip(k, r) {
   const a = A[k]; r = RAR.includes(r) ? r : "legendary";
   const c = pc[r], pref = p => x => p + x, gs = zvezdy(r === "legendary" ? godDlya(a.t1, a.t2) : []);
-  return `<div class="shapka" data-st="--c:${rc[r]}">${img(a.ic, 1)}<div><h1>${esc(aName(k))}</h1><p>${u("rarInfo")(r)}</p>
-  <small class="tiho">${u("elements")}: ${a.el.map(elem).join(", ")} · ${u("ammo")}: ${sl(a.ammo)}</small></div></div>
-  <h3>${u("rarity")}</h3><div class="fil">${RAR.map(x => `<a class="chip${x === r ? " akt" : ""}" href="#/w/a/${k}/${x}" data-st="color:${rc[x]}">${u("rar")[x]}</a>`).join("")}</div>
-  <h3>${u("elFilter")}</h3>
-  <div class="fil" id="elFil"><button data-el="" class="akt">${u("all")}</button>${a.el.map(e => `<button data-el="${e}">${sl(e)}</button>`).join("")}</div>
-  <h2>${u("allPerks")}</h2>
-  <div class="kolonki">${kol(u("frame"), Object.keys(a.fr).map(f => `frames:${k}_${f}`), 1)}${kol(u("barrel"), a.b.map(pref("barrels:")), c.barrel)}${kol(u("mag"), a.m.map(pref("magazines:")), c.magazine)}
-  ${kol(u("t1"), a.t1.map(pref("traits:")), c.trait1)}${kol(u("t2"), a.t2.map(pref("traits:")), c.trait2)}${kol(u("mwork"), mw.map(pref("masterworks:")))}</div>
-  <p class="tiho">${u("starHint")}</p>
-  <h2>${u("godFor")} ${esc(aName(k))}</h2>${r === "legendary" ? godSpisok(gs) : `<p class="tiho">${u("noGodRar")}</p>`}
-  ${uronBlok(k, "")}
-  <h2>${u("frames")}</h2>${Object.entries(a.fr).map(([f, v]) => `<div class="gr"><b class="n">${esc(tx(`F|${k}|${f}`, 0, v.n))}</b><p>${esc(tx(`F|${k}|${f}`, 1, v.d))}</p></div>`).join("")}
-  <h2>${u("base")}</h2>${statBlok(a.base)}`;
+  const shapka = `<div class="shapka" data-st="--c:${rc[r]}">${img(a.ic, 1)}<div><h1>${esc(aName(k))}</h1><p>${u("rarInfo")(r)}</p>
+  <small class="tiho">${u("elements")}: ${a.el.map(elem).join(", ")} · ${u("ammo")}: ${sl(a.ammo)}</small></div></div>`;
+  const filtry = `<div class="wfil"><div class="fil">${RAR.map(x => `<a class="chip${x === r ? " akt" : ""}" href="#/w/a/${k}/${x}" data-st="color:${rc[x]}">${u("rar")[x]}</a>`).join("")}</div>
+  <div class="fil" id="elFil"><button data-el="" class="akt">${u("all")}</button>${a.el.map(e => `<button data-el="${e}">${sl(e)}</button>`).join("")}</div></div>`;
+  const cols = wkol("fr", u("frame"), Object.keys(a.fr).map(f => `frames:${k}_${f}`), 1) + wkol("b", u("barrel"), a.b.map(pref("barrels:")), c.barrel)
+    + wkol("m", u("mag"), a.m.map(pref("magazines:")), c.magazine) + wkol("t1", u("t1"), a.t1.map(pref("traits:")), c.trait1)
+    + wkol("t2", u("t2"), a.t2.map(pref("traits:")), c.trait2) + wkol("mw", u("mwork"), mw.map(pref("masterworks:")));
+  const niz = `<h2>${u("godFor")} ${esc(aName(k))}</h2>${r === "legendary" ? godKarty(gs) : `<p class="tiho">${u("noGodRar")}</p>`}
+  ${podrobnee(`<h2>${u("frames")}</h2>${Object.entries(a.fr).map(([f, v]) => `<div class="gr"><b class="n">${esc(tx(`F|${k}|${f}`, 0, v.n))}</b><p>${esc(tx(`F|${k}|${f}`, 1, v.d))}</p></div>`).join("")}${uronBlok(k, "")}`)}`;
+  return wStranica(shapka, filtry, cols, k, Object.keys(a.fr)[0], niz);
 }
 
 function stranicaSet(s, k) {
   const set = ws[s], w = set.items[k], a = A[w.arch];
   const [t1, t2] = w.traits, gs = zvezdy(godDlya(t1, t2));
-  return `<div class="shapka" data-st="--c:${set.colour}">${img(w.icon, 1)}<div><h1>${esc(w.name)}</h1>
+  const shapka = `<div class="shapka" data-st="--c:${set.colour}">${img(w.icon, 1)}<div><h1>${esc(w.name)}</h1>
   <p>${esc(aName(w.arch))} · ${elem(w.element)} · ${esc(tx(`F|${w.arch}|${w.frame}`, 0, a.fr[w.frame]?.n || w.frame))}</p>
-  <small class="tiho">${u("set")} ${esc(set.name)} · ${u("where")}: ${esc(tx("WS|" + s, 0, set.source))}</small></div></div>
-  <h2>${u("perks")}</h2>
-  <div class="kolonki">${kol(u("frame"), [`frames:${w.arch}_${w.frame}`])}${kol(u("barrel"), ["barrels:" + w.barrel])}${kol(u("mag"), ["magazines:" + w.magazine])}
-  ${kol(u("t1"), t1.map(x => "traits:" + x))}${kol(u("t2"), t2.map(x => "traits:" + x))}${kol(u("setPerk"), ["set_perks:" + set.perk])}</div>
-  <h2>${u("godrolls")}</h2>${godSpisok(gs)}
-  ${uronBlok(w.arch, w.frame)}
+  <small class="tiho">${u("set")} ${esc(set.name)} · ${u("where")}: ${esc(tx("WS|" + s, 0, set.source))}</small></div></div>`;
+  const cols = wkol("fr", u("frame"), [`frames:${w.arch}_${w.frame}`], null, 1) + wkol("b", u("barrel"), ["barrels:" + w.barrel], null, 1) + wkol("m", u("mag"), ["magazines:" + w.magazine], null, 1)
+    + wkol("t1", u("t1"), t1.map(x => "traits:" + x)) + wkol("t2", u("t2"), t2.map(x => "traits:" + x)) + wkol("sp", u("setPerk"), ["set_perks:" + set.perk], null, 1);
+  const niz = `<h2>${u("godrolls")}</h2>${godKarty(gs)}${podrobnee(uronBlok(w.arch, w.frame))}
   <h3>${u("otherSet")}</h3><div class="g">${ORUZHIE.filter(o => o.url.startsWith(`w/s/${s}/`) && !o.url.endsWith("/" + k)).map(kartochka).join("")}</div>`;
+  return wStranica(shapka, "", cols, w.arch, w.frame, niz);
 }
 
 function stranicaEkzotik(k) {
   const e = ex[k], a = A[e.arch], ik = P["intrinsics:" + k] ? k : k.replace(/^the_/, "");
-  // правило игры, перенесённое на экзотик: ★ — трейты из гудроллов его типа оружия (как у легендарок того же типа)
   const gsTip = godDlya(a.t1, a.t2), pul = new Set(EXR[k] || []);
   ZV = new Set(gsTip.flatMap(g => [g.a, g.b]).filter(x => pul.has(x)));
-  return `<div class="shapka" data-st="--c:${rc.exotic}">${img(e.icon, 1)}<div><h1>${esc(e.name)}</h1>
-  <p>${esc(tx("X|" + k, 1, e.flavor))}</p><small class="tiho">${esc(aName(e.arch))} · ${elem(e.element)} · ${u("where")}: ${esc(tx("X|" + k, 2, e.how))}</small></div></div>
-  <h2>${u("perks")}</h2>
-  <div class="kolonki">${kol(u("frame"), [`frames:${e.arch}_${e.frame}`])}${kol(u("exPerk"), ["intrinsics:" + ik])}${e.barrel ? kol(u("barrel"), ["barrels:" + e.barrel]) : ""}
-  ${e.magazine ? kol(u("mag"), ["magazines:" + e.magazine]) : ""}${kol(u("random"), (EXR[k] || []).map(x => "traits:" + x), 1)}${kol(u("mwork"), ["masterworks:" + e.masterwork])}${P["resonators:" + ik] ? kol(u("reson"), ["resonators:" + ik]) : ""}</div>
-  <p class="tiho">${u("exFixed2")}</p><p class="tiho">${u("exRule")(aName(e.arch))}</p>
-  ${uronBlok(e.arch, e.frame, k)}
-  <h2>${u("godFor")} ${esc(aName(e.arch))}</h2>${godSpisok(gsTip)}
-  <h2>${u("base")} · ${esc(aName(e.arch))}</h2>${statBlok(a.base)}`;
+  const shapka = `<div class="shapka" data-st="--c:${rc.exotic}">${img(e.icon, 1)}<div><h1>${esc(e.name)}</h1>
+  <p>${esc(tx("X|" + k, 1, e.flavor))}</p><small class="tiho">${esc(aName(e.arch))} · ${elem(e.element)} · ${u("where")}: ${esc(tx("X|" + k, 2, e.how))}</small></div></div>`;
+  if (FOKUS == null) FOKUS = "intrinsics:" + ik;
+  const cols = wkol("fr", u("frame"), [`frames:${e.arch}_${e.frame}`], null, 1) + wkol("ex", u("exPerk"), ["intrinsics:" + ik], null, 1)
+    + (e.barrel ? wkol("b", u("barrel"), ["barrels:" + e.barrel], null, 1) : "") + (e.magazine ? wkol("m", u("mag"), ["magazines:" + e.magazine], null, 1) : "")
+    + wkol("t1", u("random"), (EXR[k] || []).map(x => "traits:" + x), 1) + wkol("mw", u("mwork"), ["masterworks:" + e.masterwork], null, 1)
+    + (P["resonators:" + ik] ? wkol("rs", u("reson"), ["resonators:" + ik], null, 1) : "");
+  const niz = `<p class="tiho">${u("exFixed2")}</p><p class="tiho">${u("exRule")(aName(e.arch))}</p>
+  ${podrobnee(uronBlok(e.arch, e.frame, k) + `<h2>${u("godFor")} ${esc(aName(e.arch))}</h2>${godKarty(gsTip)}`)}`;
+  return wStranica(shapka, "", cols, e.arch, e.frame, niz);
 }
 
 const mini = (href, ic, n, zol) => `<a class="mini${zol ? " zol" : ""}" href="#/${href}"><img src="img/${ic}.png" alt="" loading="lazy"><span>${esc(n)}</span></a>`;
@@ -286,6 +321,7 @@ function stranicaKol(sec) {
 
 function pokaz() {
   const [r, ...p] = location.hash.replace(/^#\/?/, "").split("/");
+  if (location.hash !== ROLL_URL) { ROLL = {}; FOKUS = null; ROLL_URL = location.hash; }
   ZV = GOD_PERKS;
   const v = r === "w" ? (p[0] === "a" && A[p[1]] ? stranicaTip(p[1], p[2]) : p[0] === "s" && ws[p[1]]?.items[p[2]] ? stranicaSet(p[1], p[2])
     : p[0] === "e" && ex[p[1]] ? stranicaEkzotik(p[1]) : stranicaOruzhie())
@@ -306,8 +342,11 @@ function info(id) {
 }
 
 document.addEventListener("click", e => {
-  const t = e.target.closest("[data-p],[data-f],[data-rar],[data-dt],[data-sort],[data-el],[data-god],[data-lang],#info .x");
+  const t = e.target.closest("[data-pk],[data-rollreset],[data-p],[data-f],[data-rar],[data-dt],[data-sort],[data-el],[data-god],[data-lang],#info .x");
   if (!t) return;
+  if (t.dataset.pk) { const [col, id] = t.dataset.pk.split("|"); const fix = t.classList.contains("fix");
+    ROLL[col] = ROLL[col] === id && !fix ? undefined : id; FOKUS = id; const y = scrollY; pokaz(); scrollTo(0, y); if (innerWidth < 860) info(id); return; }
+  if (t.dataset.rollreset) { ROLL = {}; FOKUS = null; const y = scrollY; pokaz(); scrollTo(0, y); return; }
   if (t.matches("#info .x")) $("#info").hidden = true;
   else if (t.dataset.lang) { lang = t.dataset.lang; try { localStorage.setItem("lang", lang); } catch {} pokaz(); }
   else if (t.dataset.p) info(t.dataset.p);
@@ -317,14 +356,10 @@ document.addEventListener("click", e => {
   else if (t.dataset.sort) { sortK = t.dataset.sort; const y = scrollY; pokaz(); scrollTo(0, y); }
   else if (t.dataset.el != null) {
     document.querySelectorAll("#elFil button").forEach(b => b.classList.toggle("akt", b === t));
-    document.querySelectorAll(".kolonki .perk").forEach(b => { const e2 = P[b.dataset.p]?.e; b.hidden = !!(t.dataset.el && e2 && e2 !== t.dataset.el); });
+    document.querySelectorAll(".wkols .pk").forEach(b => { const e2 = P[b.dataset.pk.split("|")[1]]?.e; b.hidden = !!(t.dataset.el && e2 && e2 !== t.dataset.el); });
   } else if (t.dataset.god) {
     const [a, b] = t.dataset.god.split(",").map(x => "traits:" + x);
-    document.querySelectorAll(".kolonki .perk").forEach(p => {
-      const sv = p.dataset.p === a || p.dataset.p === b, trait = p.dataset.p.startsWith("traits:");
-      p.classList.toggle("vybor", sv); p.classList.toggle("tusk", trait && !sv);
-    });
-    document.querySelector(".kolonki").scrollIntoView({behavior: "smooth", block: "center"});
+    if (document.querySelector(".wkols")) { ROLL.t1 = a; ROLL.t2 = b; FOKUS = a; pokaz(); document.querySelector(".wgrid").scrollIntoView({behavior: "smooth", block: "start"}); }
   }
 });
 document.addEventListener("input", e => {

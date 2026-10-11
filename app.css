@@ -120,3 +120,53 @@ img.pi{object-fit:contain;background:#1d2130}
 .itog .stat span:last-child{min-width:0;white-space:nowrap}
 .tir{color:var(--zol);font-weight:normal}
 .blevo,.bpravo{min-width:0}
+/* страница оружия: перки иконками + боковая панель */
+.wfil{display:flex;flex-wrap:wrap;gap:4px 16px;align-items:center;margin:10px 0}
+.wgrid{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:14px;align-items:start;margin-top:10px}
+@media (max-width:860px){.wgrid{grid-template-columns:minmax(0,1fr)}}
+.wmain{min-width:0}
+.wkols{display:flex;gap:6px;background:var(--k);border:1px solid var(--rama);padding:10px;overflow-x:auto}
+.wk{flex:1 0 auto;min-width:52px;display:flex;flex-direction:column;align-items:center}
+.wk>b{font-size:10px;letter-spacing:.12em;color:var(--tiho);text-transform:uppercase;font-weight:normal;text-align:center;white-space:nowrap}
+.wk>small{font-size:10px;color:#5f5e6c;margin-bottom:4px;white-space:nowrap}
+.wk.pusto{opacity:.45}
+.wk-g{display:grid;grid-auto-flow:row;gap:6px;margin-top:6px}
+@media (max-width:860px){.wk-g{grid-template-columns:repeat(auto-fill,40px)}}
+.pk{position:relative;width:40px;height:40px;border-radius:50%;border:2px solid #2c3042;background:#0b0c12;display:grid;place-items:center;cursor:pointer;padding:0}
+.pk .pi{transform:scale(1.15)}
+.pk:hover{border-color:#8b8a99}
+.pk.god{border-color:#6b5a1c}
+.pk.vyb{border-color:var(--zol);box-shadow:0 0 0 2px #f2c23055,0 0 12px #f2c23066;background:#2a2410}
+.pk i{position:absolute;right:-4px;top:-6px;font-style:normal;color:var(--zol);font-size:12px;text-shadow:0 0 3px #000}
+.wside{display:flex;flex-direction:column;gap:10px;position:sticky;top:70px}
+@media (max-width:860px){.wside{position:static}}
+.wcard{background:var(--k);border:1px solid var(--rama);padding:10px}
+.wcard h3{margin:0 0 8px}
+.wfok>div{display:flex;gap:8px;align-items:center}.wfok b{color:#fff}.wfok p{margin:6px 0 0;font-size:13px}
+.wroll{display:flex;flex-direction:column;gap:3px}
+.wroll button,.godp button{display:flex;gap:6px;align-items:center;background:none;border:0;color:var(--tx);font:inherit;font-size:12px;padding:1px 0;cursor:pointer;text-align:left}
+.zolt{color:var(--zol);margin:8px 0 4px}
+.zel{color:#7fd47f}
+.stat span:nth-child(2){display:flex}
+.stat span:nth-child(2) b.plus{background:#7fd47f}.stat span:nth-child(2) b.minus{background:#e0605a}
+.wcard .stat{grid-template-columns:96px 1fr 58px;max-width:none}
+.wcard .stat span:last-child{min-width:0;white-space:nowrap}
+.gods{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:8px}
+.godk{background:var(--k);border:1px solid var(--rama);border-left:3px solid var(--zol);padding:10px}
+.godk>b{color:var(--zol)}.godk p{font-size:12px;color:#c9c4b4}
+.godp{display:flex;flex-direction:column;gap:2px;margin:6px 0}
+details.podr{margin-top:18px;border-top:1px solid var(--rama);padding-top:8px}
+details.podr>summary{cursor:pointer;color:var(--zol);letter-spacing:.15em;text-transform:uppercase;font-size:13px}
+@media (max-width:860px){.wkols{gap:2px;padding:8px 4px}.wk{flex:1 1 0;min-width:0}.wk>b{font-size:9px;letter-spacing:.04em}.wk>small{font-size:8px}.wk-g{grid-template-columns:1fr;justify-items:center}
+.pk{width:36px;height:36px}.pk .pi{transform:none}}
+.wk.shir{flex:3 1 220px}.wk.shir .wk-g{grid-template-columns:repeat(auto-fill,40px);justify-content:center;width:100%}
+@media (max-width:860px){.wk.shir{flex:3 1 0}.wk.shir .wk-g{grid-template-columns:repeat(auto-fill,36px)}}
+/* колонки перков ближе друг к другу */
+.wkols{gap:14px;justify-content:flex-start}
+.wk{flex:0 0 auto;min-width:64px}
+.wk.dve .wk-g{grid-template-columns:repeat(2,40px);gap:6px}
+.wk.shir{flex:0 1 auto}.wk.shir .wk-g{grid-template-columns:repeat(5,40px)}
+@media (max-width:860px){.wkols{gap:6px}.wk{flex:0 0 auto;min-width:0}.wk.dve .wk-g{grid-template-columns:repeat(2,36px);gap:4px}.wk.shir .wk-g{grid-template-columns:repeat(4,36px)}}
+.wkols{width:fit-content;max-width:100%}
+@media (min-width:861px){.wgrid{grid-template-columns:auto minmax(320px,1fr)}}
+@media (max-width:860px){.wk.dve .wk-g{grid-template-columns:36px}.wkols{width:auto}}
