@@ -66,9 +66,9 @@ const U = {
     armorGod: s => `God Roll (unser Tipp): maximal <b>${s}</b> — das Set rollt in diese Werte.`, mods: "Rüstungsmods",
     groups: "Normale Rüstungswerte rollen in Gruppen", close: "Schließen"},
 };
-Object.assign(U.ru, {tapPerk: "Нажмите на перк: тут появится описание, а сам перк попадёт в ваш ролл. Статы справа пересчитаются.", yourRoll: "Ваш ролл", rollHint: "Выберите по перку в колонках — соберётся ролл.", isGod: "Это гудролл", reset: "Сбросить", starHint2: "★ — перк гудролла. Наведите на иконку, чтобы увидеть название.", useGod: "Собрать этот ролл", more: "Подробнее", statsL: "Статы"});
-Object.assign(U.en, {tapPerk: "Tap a perk: its description shows here and it goes into your roll. The stats update.", yourRoll: "Your roll", rollHint: "Pick one perk per column to build a roll.", isGod: "This is a god roll", reset: "Reset", starHint2: "★ — god-roll perk. Hover an icon to see its name.", useGod: "Build this roll", more: "More", statsL: "Stats"});
-Object.assign(U.de, {tapPerk: "Tippe auf einen Perk: hier erscheint die Beschreibung, und er kommt in deinen Roll. Die Werte aktualisieren sich.", yourRoll: "Dein Roll", rollHint: "Wähle je einen Perk pro Spalte für deinen Roll.", isGod: "Das ist ein God Roll", reset: "Zurücksetzen", starHint2: "★ — God-Roll-Perk. Fahre über ein Icon für den Namen.", useGod: "Diesen Roll bauen", more: "Mehr", statsL: "Werte"});
+Object.assign(U.ru, {exoticsH: "Экзотики", tapPerk: "Нажмите на перк: тут появится описание, а сам перк попадёт в ваш ролл. Статы справа пересчитаются.", yourRoll: "Ваш ролл", rollHint: "Выберите по перку в колонках — соберётся ролл.", isGod: "Это гудролл", reset: "Сбросить", starHint2: "★ — перк гудролла. Наведите на иконку, чтобы увидеть название.", useGod: "Собрать этот ролл", more: "Подробнее", statsL: "Статы"});
+Object.assign(U.en, {exoticsH: "Exotics", tapPerk: "Tap a perk: its description shows here and it goes into your roll. The stats update.", yourRoll: "Your roll", rollHint: "Pick one perk per column to build a roll.", isGod: "This is a god roll", reset: "Reset", starHint2: "★ — god-roll perk. Hover an icon to see its name.", useGod: "Build this roll", more: "More", statsL: "Stats"});
+Object.assign(U.de, {exoticsH: "Exotics", tapPerk: "Tippe auf einen Perk: hier erscheint die Beschreibung, und er kommt in deinen Roll. Die Werte aktualisieren sich.", yourRoll: "Dein Roll", rollHint: "Wähle je einen Perk pro Spalte für deinen Roll.", isGod: "Das ist ein God Roll", reset: "Zurücksetzen", starHint2: "★ — God-Roll-Perk. Fahre über ein Icon für den Namen.", useGod: "Diesen Roll bauen", more: "Mehr", statsL: "Werte"});
 const SLOV = { // короткие игровые слова
   ru: {kinetic: "Кинетика", arc: "Молния", ember: "Огонь", void: "Пустота", helmet: "Шлем", gauntlets: "Перчатки", chest: "Нагрудник", legs: "Ботинки", cloak: "Плащ",
     primary: "основные", special: "особые", heavy: "тяжёлые", range: "Дальность", stability: "Стабильность", handling: "Удобство", reload: "Перезарядка", magnetism: "Магнетизм",
@@ -127,17 +127,19 @@ const ORUZHIE = [
 const kartochka = o => `<a class="kar" href="#/${o.url}" data-st="--c:${o.c}">${img(o.ic)}<span><b>${esc(o.n())}</b><small>${esc(o.sub())}${o.el ? " · " + elem(o.el) : ""}</small></span></a>`;
 
 let filtr = "", poisk = "", rar = "";
+const plitka = o => `<a class="plit" href="#/${o.url}" data-st="--c:${o.c}"><span class="plit-ik"><img src="img/${o.ic}.png" alt="" loading="lazy"></span>
+  <b>${esc(o.n())}</b><small>${esc(o.url.startsWith("w/a/") ? u("rar")[o.r] : aName(o.arch))}${o.el ? " · " + elem(o.el) : ""}</small></a>`;
 function stranicaOruzhie() {
-  // без фильтра редкости тип оружия показываем один раз (легендаркой), иначе — карточки нужной редкости
+  // без фильтра редкости тип оружия показываем один раз (легендаркой), иначе — плитки нужной редкости
   const vid = ORUZHIE.filter(o => (rar ? o.r === rar : !(o.url.startsWith("w/a/") && o.r !== "legendary"))
     && (!filtr || o.arch === filtr) && (!poisk || (o.n() + " " + o.en).toLowerCase().includes(poisk)));
+  const razd = [["exotic", o => o.r === "exotic"], ["named", o => o.url.startsWith("w/s/")], ["types", o => o.url.startsWith("w/a/")]]
+    .map(([k, f]) => [k, vid.filter(f)]).filter(([, v]) => v.length);
   return `<h2>${u("weapons")}</h2>
-  <input class="poisk" id="poisk" placeholder="${u("search")}" value="${esc(poisk)}">
-  <div class="fil"><span class="tiho">${u("rarity")}:</span><button data-rar="" class="${rar ? "" : "akt"}">${u("all")}</button>${[...RAR, "exotic"].map(r =>
-    `<button data-rar="${r}" class="${rar === r ? "akt" : ""}" data-st="color:${rc[r]}">${u("rar")[r]}</button>`).join("")}</div>
-  <div class="fil"><button data-f="" class="${filtr ? "" : "akt"}">${u("all")}</button>${Object.keys(A).map(k =>
-    `<button data-f="${k}" class="${filtr === k ? "akt" : ""}">${esc(aName(k))}</button>`).join("")}</div>
-  <div class="g">${vid.map(kartochka).join("") || `<p class="tiho">${u("nothing")}</p>`}</div>`;
+  <div class="panel"><input class="poisk" id="poisk" placeholder="${u("search")}" value="${esc(poisk)}">
+  <select id="selRar"><option value="">${u("rarity")}: ${u("all")}</option>${[...RAR, "exotic"].map(r => `<option value="${r}"${rar === r ? " selected" : ""}>${u("rar")[r]}</option>`).join("")}</select>
+  <select id="selTip"><option value="">${u("weapon")}: ${u("all")}</option>${Object.keys(A).map(k => `<option value="${k}"${filtr === k ? " selected" : ""}>${esc(aName(k))}</option>`).join("")}</select></div>
+  ${razd.map(([k, v]) => `<h3>${k === "exotic" ? u("exoticsH") : u(k)} <span class="tiho">${v.length}</span></h3><div class="plitki">${v.map(plitka).join("")}</div>`).join("") || `<p class="tiho">${u("nothing")}</p>`}`;
 }
 
 const godDlya = (t1, t2) => god.filter(g => t1.includes(g.a) && t2.includes(g.b));
@@ -242,21 +244,31 @@ function stranicaGod() {
   }).join("")}`;
 }
 
+let AFOK = null;
+function armorKarta(id) {
+  if (id.startsWith("armor:")) { const k = id.slice(6), e = ex[k];
+    return `<div class="wfok"><div>${img(e.icon)}<div><b>${esc(e.name)}</b><br><small class="tiho">${sl(e.bucket)} · ${u("exotic")}</small></div></div>
+      ${e.flavor ? `<p><i>${esc(tx("X|" + k, 1, e.flavor))}</i></p>` : ""}
+      <div class="wfok2">${pi(id)}<b>${esc(pName(id))}</b></div><p>${esc(tx(trKey(id), 1, P[id]?.d))}</p>
+      <p class="tiho">${u("bestStats")}: ${e.stats.map(sl).join(" + ")}<br>${u("where")}: ${esc(tx("X|" + k, 2, e.how))}</p></div>`; }
+  return `<div class="wfok"><div class="wfok2">${pi(id)}<b>${esc(pName(id))}</b></div><p>${esc(tx(trKey(id), 1, P[id]?.d))}</p></div>`;
+}
 function stranicaBronya() {
   const exArm = Object.entries(ex).filter(([, e]) => e.kind === "armor");
   const mods = Object.keys(P).filter(x => x.startsWith("mods:"));
-  return `<h2>${u("exArmor")}</h2><div class="g">${exArm.map(([k, e]) =>
-    `<div class="kar" data-st="--c:${rc.exotic};cursor:pointer" data-p="armor:${k}">${img(e.icon)}<span><b>${esc(e.name)}</b>
-    <small>${sl(e.bucket)} · ${u("bestStats")}: ${e.stats.map(sl).join(" + ")}</small></span></div>`).join("")}</div>
-  <p class="tiho">${u("tapArmor")}</p>
-  <h2>${u("armorSets")}</h2>${Object.entries(AS).map(([id, s]) => `<div class="gr" data-st="border-left-color:${s.colour}">
-    <b class="n" data-st="color:${s.colour}">${esc(s.name)}</b> <span class="tiho">· ${u("where")}: ${esc(tx("AS|" + id, 0, s.source))}</span>
-    <p>${u("armorGod")(s.group.map(sl).join(" + "))}</p>
-    <div class="para">${s.bonuses.map(b => perk("set_bonuses:" + b)).join("")}</div>
-    <div class="g">${Object.entries(s.items).map(([slot, n]) => `<div class="kar" data-st="--c:${s.colour}">${img(s.icons[slot])}<span><b>${esc(n)}</b><small>${sl(slot)}</small></span></div>`).join("")}</div></div>`).join("")}
-  <h2>${u("mods")}</h2><div class="kolonki">${["helmet", "gauntlets", "chest", "legs"].map(s =>
-    kol(sl(s), mods.filter(m => P[m].s?.includes(s)))).join("")}</div>
-  <p class="tiho">${u("groups")}: ${LB.groups.map(g => g.map(sl).join("/")).join(" · ")}.</p>`;
+  AFOK = AFOK || "armor:" + exArm[0][0];
+  const slots = ["helmet", "gauntlets", "chest", "legs", "cloak"];
+  const plit = ([k, e]) => `<button class="plit${AFOK === "armor:" + k ? " vyb" : ""}" data-af="armor:${k}" data-st="--c:${rc.exotic}"><span class="plit-ik"><img src="img/${e.icon}.png" alt="" loading="lazy"></span><b>${esc(e.name)}</b><small>${e.stats.map(x => sl(x).slice(0, 3)).join(" + ")}</small></button>`;
+  const ikon = id => `<button class="pk${AFOK === id ? " vyb" : ""}" data-af="${id}" title="${esc(pName(id))}">${pi(id)}</button>`;
+  const levo = `<h2>${u("exArmor")}</h2>${slots.map(sl2 => { const v = exArm.filter(([, e]) => e.bucket === sl2); return v.length ? `<h3>${sl(sl2)}</h3><div class="plitki">${v.map(plit).join("")}</div>` : ""; }).join("")}
+    <h2>${u("armorSets")}</h2><div class="sety">${Object.entries(AS).map(([id, s2]) => `<div class="setk" data-st="--c:${s2.colour}">
+      <div class="setk-h"><b>${esc(s2.name)}</b><small class="tiho">${u("where")}: ${esc(tx("AS|" + id, 0, s2.source))}</small></div>
+      <div class="setk-i">${slots.map(sl2 => `<span title="${esc(s2.items[sl2])}"><img src="img/${s2.icons[sl2]}.png" alt="" loading="lazy"><small>${sl(sl2)}</small></span>`).join("")}</div>
+      <p class="tiho">${u("armorGod")(s2.group.map(sl).join(" + "))}</p>
+      <div class="setk-b">${s2.bonuses.map(b => `<button class="${AFOK === "set_bonuses:" + b ? "vyb" : ""}" data-af="set_bonuses:${b}">${pi("set_bonuses:" + b)}<span>${esc(pName("set_bonuses:" + b))}</span></button>`).join("")}</div></div>`).join("")}</div>
+    <h2>${u("mods")}</h2><div class="wkols">${["helmet", "gauntlets", "chest", "legs"].map(s2 => `<div class="wk"><b>${sl(s2)}</b><div class="wk-g">${mods.filter(m => P[m].s?.includes(s2)).map(ikon).join("")}</div></div>`).join("")}</div>
+    <p class="tiho">${u("groups")}: ${LB.groups.map(g => g.map(sl).join("/")).join(" · ")}.</p>`;
+  return `<div class="wgrid bgrid"><div class="wmain">${levo}</div><aside class="wside"><div class="wcard">${armorKarta(AFOK)}</div></aside></div>`;
 }
 
 // ---------- урон ----------
@@ -342,10 +354,11 @@ function info(id) {
 }
 
 document.addEventListener("click", e => {
-  const t = e.target.closest("[data-pk],[data-rollreset],[data-p],[data-f],[data-rar],[data-dt],[data-sort],[data-el],[data-god],[data-lang],#info .x");
+  const t = e.target.closest("[data-af],[data-pk],[data-rollreset],[data-p],[data-f],[data-rar],[data-dt],[data-sort],[data-el],[data-god],[data-lang],#info .x");
   if (!t) return;
   if (t.dataset.pk) { const [col, id] = t.dataset.pk.split("|"); const fix = t.classList.contains("fix");
     ROLL[col] = ROLL[col] === id && !fix ? undefined : id; FOKUS = id; const y = scrollY; pokaz(); scrollTo(0, y); if (innerWidth < 860) info(id); return; }
+  if (t.dataset.af) { AFOK = t.dataset.af; const y = scrollY; pokaz(); scrollTo(0, y); if (innerWidth < 860) info(AFOK); return; }
   if (t.dataset.rollreset) { ROLL = {}; FOKUS = null; const y = scrollY; pokaz(); scrollTo(0, y); return; }
   if (t.matches("#info .x")) $("#info").hidden = true;
   else if (t.dataset.lang) { lang = t.dataset.lang; try { localStorage.setItem("lang", lang); } catch {} pokaz(); }
@@ -361,6 +374,10 @@ document.addEventListener("click", e => {
     const [a, b] = t.dataset.god.split(",").map(x => "traits:" + x);
     if (document.querySelector(".wkols")) { ROLL.t1 = a; ROLL.t2 = b; FOKUS = a; pokaz(); document.querySelector(".wgrid").scrollIntoView({behavior: "smooth", block: "start"}); }
   }
+});
+document.addEventListener("change", e => {
+  if (e.target.id === "selRar") { rar = e.target.value; pokaz(); }
+  else if (e.target.id === "selTip") { filtr = e.target.value; pokaz(); }
 });
 document.addEventListener("input", e => {
   if (e.target.id !== "poisk") return;
