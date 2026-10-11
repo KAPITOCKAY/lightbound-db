@@ -232,16 +232,19 @@ function stranicaEkzotik(k) {
 }
 
 const mini = (href, ic, n, zol) => `<a class="mini${zol ? " zol" : ""}" href="#/${href}"><img src="img/${ic}.png" alt="" loading="lazy"><span>${esc(n)}</span></a>`;
+const mt = (href, ic, n, zol) => `<a class="mt${zol ? " zol" : ""}" href="#/${href}" title="${esc(n)}"><img src="img/${ic}.png" alt="" loading="lazy"><span>${esc(n)}</span></a>`;
+let godTip = "";
 function stranicaGod() {
+  const vse = god.map(g => ({g, tipy: Object.keys(A).filter(k => A[k].t1.includes(g.a) && A[k].t2.includes(g.b)),
+    imen: ORUZHIE.filter(o => o.t && o.t[0].includes(g.a) && o.t[1].includes(g.b))}))
+    .filter(x => !godTip || x.tipy.includes(godTip) || x.imen.some(o => o.arch === godTip));
   return `<h2>${u("godrolls")}</h2><p class="tiho">${u("godIntro")}</p>
-  ${god.map(g => {
-    const tipy = Object.keys(A).filter(k => A[k].t1.includes(g.a) && A[k].t2.includes(g.b));
-    const imen = ORUZHIE.filter(o => o.t && o.t[0].includes(g.a) && o.t[1].includes(g.b));
-    return `<div class="gr"><b class="n">★ ${esc(gName(g))}</b><div class="para">${perk("traits:" + g.a)}${perk("traits:" + g.b)}</div>
+  <div class="panel"><select id="selGod"><option value="">${u("weapon")}: ${u("all")}</option>${Object.keys(A).map(k => `<option value="${k}"${godTip === k ? " selected" : ""}>${esc(aName(k))}</option>`).join("")}</select>
+  <span class="tiho">${vse.length} / ${god.length}</span></div>
+  <div class="gods2">${vse.map(({g, tipy, imen}) => `<div class="godk"><b>★ ${esc(gName(g))}</b>
+    <div class="godp">${["a", "b"].map(x => `<button data-p="traits:${g[x]}">${pi("traits:" + g[x])}<span>${esc(pName("traits:" + g[x]))}</span></button>`).join("")}</div>
     <p>${esc(gWhy(g))}</p>
-    <h3>${u("types")}</h3><div class="minis">${tipy.map(k => mini(`w/a/${k}`, A[k].ic, aName(k))).join("")}</div>
-    ${imen.length ? `<h3>${u("named")}</h3><div class="minis">${imen.map(o => mini(o.url, o.ic, o.n(), 1)).join("")}</div>` : ""}</div>`;
-  }).join("")}`;
+    <div class="mts">${tipy.map(k => mt(`w/a/${k}`, A[k].ic, aName(k))).join("")}${imen.map(o => mt(o.url, o.ic, o.n(), 1)).join("")}</div></div>`).join("") || `<p class="tiho">${u("nothing")}</p>`}</div>`;
 }
 
 let AFOK = null;
@@ -291,14 +294,18 @@ const STROKI = () => {
 const KOL = [["v", "perShot"], ["k", "head"], ["rpm", "rpmL"], ["mag", "magL"], ["dps", "dpsL"], ["dpsK", "dpsHL"], ["dpsM", "dpsML"]];
 const yach = (r, c) => c === "k" ? (r.k > 1 ? Math.round(r.v * r.k) : "—") : c === "v" && r.pel > 1 ? `${r.v} (${r.pel}×${r.v / r.pel})` : r[c];
 function tablica(rows, mark) {
-  return `<div class="tbl"><table><tr><th>${u("weapon")}</th><th>${u("frameL")}</th>${KOL.map(([c, l]) => `<th data-sort="${c}">${u(l)}${sortK === c ? " ▼" : ""}</th>`).join("")}</tr>
-  ${rows.map(r => `<tr class="${r.ex ? "ex" : ""}${mark && r.key === mark ? " my" : ""}"><td><a class="tk" href="#/${r.url}"><img src="img/${r.exk ? ex[r.exk].icon : A[r.ak].ic}.png" alt="" loading="lazy">${esc(r.n)}</a></td><td><span class="tk">${pi(`frames:${r.ak}_${r.fk}`)}${esc(frName(r.ak, r.fk))}</span></td>${KOL.map(([c]) => `<td>${yach(r, c)}</td>`).join("")}</tr>`).join("")}</table></div>`;
+  const BAR = ["dps", "dpsK", "dpsM"], mx = Object.fromEntries(BAR.map(c => [c, Math.max(1, ...rows.map(r => +r[c] || 0))]));
+  const yach2 = (r, c) => BAR.includes(c) ? `<span class="tv">${yach(r, c)}<i data-st="width:${Math.round((+r[c] || 0) / mx[c] * 100)}%"></i></span>` : yach(r, c);
+  return `<div class="tbl"><table><thead><tr><th>${u("weapon")}</th><th>${u("frameL")}</th>${KOL.map(([c, l]) => `<th data-sort="${c}" class="${sortK === c ? "akt" : ""}">${u(l)}${sortK === c ? " ▼" : ""}</th>`).join("")}</tr></thead><tbody>
+  ${rows.map(r => `<tr class="${r.ex ? "ex" : ""}${mark && r.key === mark ? " my" : ""}"><td><a class="tk" href="#/${r.url}"><img src="img/${r.exk ? ex[r.exk].icon : A[r.ak].ic}.png" alt="" loading="lazy">${esc(r.n)}</a></td><td><span class="tk">${pi(`frames:${r.ak}_${r.fk}`)}${esc(frName(r.ak, r.fk))}</span></td>${KOL.map(([c]) => `<td class="${sortK === c ? "skol" : ""}">${yach2(r, c)}</td>`).join("")}</tr>`).join("")}</tbody></table></div>`;
 }
 let sortK = "dpsM", dmgTip = "";
 function stranicaUron() {
   const rows = STROKI().filter(r => !dmgTip || r.ak === dmgTip).sort((a, b) => (+b[sortK] || 0) - (+a[sortK] || 0));
-  return `<h2>${u("dmg")}</h2><p class="tiho">${u("dmgIntro")}</p>
-  <div class="fil"><button data-dt="" class="${dmgTip ? "" : "akt"}">${u("all")}</button>${Object.keys(A).map(k => `<button data-dt="${k}" class="${dmgTip === k ? "akt" : ""}">${esc(aName(k))}</button>`).join("")}</div>${tablica(rows)}`;
+  return `<h2>${u("dmg")}</h2>
+  <div class="panel"><select id="selDt"><option value="">${u("weapon")}: ${u("all")}</option>${Object.keys(A).map(k => `<option value="${k}"${dmgTip === k ? " selected" : ""}>${esc(aName(k))}</option>`).join("")}</select>
+  <select id="selSort">${KOL.map(([c, l]) => `<option value="${c}"${sortK === c ? " selected" : ""}>▼ ${u(l)}</option>`).join("")}</select></div>
+  ${tablica(rows)}${podrobnee(`<p class="tiho">${u("dmgIntro")}</p>`)}`;
 }
 const uronBlok = (ak, fk, exk) => { const my = exk ? "ex:" + exk : fk ? `${ak}_${fk}` : "";
   const rows = STROKI().filter(r => r.ak === ak && (!r.ex || r.key === my)).sort((a, b) => b.dpsM - a.dpsM);
@@ -321,14 +328,20 @@ function predmet(sec, it) {
   return `<div class="pr" data-st="--c:${rc[it.r] || "var(--rama)"}${it.bg ? ";--bg:" + it.bg : ""}"><div class="pr-k${it.bg ? " em" : ""}">${kart}</div>
     <div><b>${esc(n)}</b>${ex2}<p>${esc(d)}</p>${src ? `<small class="tiho">${u("where")}: ${esc(src)}</small>` : ""}${perki}</div></div>`;
 }
+let KFOK = null;
+const kolKart = it => it.img ? `<img src="img/${it.img}" alt="" loading="lazy">` : it.mi != null ? ik40(it.mi)
+  : it.cv ? `<span class="tm" data-st="background:linear-gradient(135deg,${it.cv[0]},${it.cv[1]})"></span>` : "";
 function stranicaKol(sec) {
   const S = K.find(s => s.id === sec) || K[0];
-  const telo = S.id === "lore"
-    ? `<p class="tiho">${u("loreNote")}</p>${S.items.map(it => `<details class="lore"><summary>${ik40(it.mi)}<b>${esc(it.n)}</b></summary><p>${esc(it.d)}</p></details>`).join("")}`
-    : `<div class="g2">${S.items.map(it => predmet(S.id, it)).join("")}</div>${S.id === "shells"
-      ? `<h3>${u("shellPerks")}</h3><div class="para">${Object.keys(P).filter(x => x.startsWith("wispperk:")).map(x => perk(x)).join("")}</div>` : ""}`;
-  return `<h2>${u("col")}</h2><div class="fil">${K.map(s => `<a class="chip${s === S ? " akt" : ""}" href="#/col/${s.id}">${u("secs")[s.id]} <span class="tiho">${s.items.length}</span></a>`).join("")}</div>
-  <h2>${u("secs")[S.id]}</h2>${telo}`;
+  const chips = `<div class="panel">${K.map(s => `<a class="chip${s === S ? " akt" : ""}" href="#/col/${s.id}">${u("secs")[s.id]} <span class="tiho">${s.items.length}</span></a>`).join("")}</div>`;
+  if (S.id === "lore") return `<h2>${u("col")}</h2>${chips}<h2>${u("secs")[S.id]}</h2><p class="tiho">${u("loreNote")}</p>
+    ${S.items.map(it => `<details class="lore"><summary>${ik40(it.mi)}<b>${esc(it.n)}</b></summary><p>${esc(it.d)}</p></details>`).join("")}`;
+  const fok = S.items.find(it => it.id === KFOK) || S.items[0];
+  const plit = it => { const kk = `K|${S.id}|${it.id}`;
+    return `<button class="plit${it === fok ? " vyb" : ""}" data-kf="${esc(it.id)}" data-st="--c:${rc[it.r] || "var(--rama)"}"><span class="plit-ik${it.bg ? " em" : ""}"${it.bg ? ` data-st="--bg:${it.bg}"` : ""}>${kolKart(it)}</span><b>${esc(tx(kk, 0, it.n))}</b>${it.r ? `<small data-st="color:${rc[it.r]}">${u("rar")[it.r]}</small>` : ""}</button>`; };
+  const shells = S.id === "shells" ? `<h3>${u("shellPerks")}</h3><div class="para">${Object.keys(P).filter(x => x.startsWith("wispperk:")).map(x => perk(x)).join("")}</div>` : "";
+  return `<h2>${u("col")}</h2>${chips}<div class="wgrid bgrid"><div class="wmain"><h2>${u("secs")[S.id]}</h2><div class="plitki">${S.items.map(plit).join("")}</div>${shells}</div>
+    <aside class="wside"><div class="wcard" id="kolKarta">${predmet(S.id, fok)}</div></aside></div>`;
 }
 
 function pokaz() {
@@ -354,10 +367,12 @@ function info(id) {
 }
 
 document.addEventListener("click", e => {
-  const t = e.target.closest("[data-af],[data-pk],[data-rollreset],[data-p],[data-f],[data-rar],[data-dt],[data-sort],[data-el],[data-god],[data-lang],#info .x");
+  const t = e.target.closest("[data-kf],[data-af],[data-pk],[data-rollreset],[data-p],[data-f],[data-rar],[data-dt],[data-sort],[data-el],[data-god],[data-lang],#info .x");
   if (!t) return;
   if (t.dataset.pk) { const [col, id] = t.dataset.pk.split("|"); const fix = t.classList.contains("fix");
     ROLL[col] = ROLL[col] === id && !fix ? undefined : id; FOKUS = id; const y = scrollY; pokaz(); scrollTo(0, y); if (innerWidth < 860) info(id); return; }
+  if (t.dataset.kf) { KFOK = t.dataset.kf; const y = scrollY; pokaz(); scrollTo(0, y);
+    if (innerWidth < 860) { $("#info").innerHTML = `<button class="x" aria-label="${u("close")}">✕</button>` + $("#kolKarta").innerHTML; stili($("#info")); $("#info").hidden = false; } return; }
   if (t.dataset.af) { AFOK = t.dataset.af; const y = scrollY; pokaz(); scrollTo(0, y); if (innerWidth < 860) info(AFOK); return; }
   if (t.dataset.rollreset) { ROLL = {}; FOKUS = null; const y = scrollY; pokaz(); scrollTo(0, y); return; }
   if (t.matches("#info .x")) $("#info").hidden = true;
@@ -378,6 +393,9 @@ document.addEventListener("click", e => {
 document.addEventListener("change", e => {
   if (e.target.id === "selRar") { rar = e.target.value; pokaz(); }
   else if (e.target.id === "selTip") { filtr = e.target.value; pokaz(); }
+  else if (e.target.id === "selGod") { godTip = e.target.value; pokaz(); }
+  else if (e.target.id === "selDt") { dmgTip = e.target.value; pokaz(); }
+  else if (e.target.id === "selSort") { sortK = e.target.value; pokaz(); }
 });
 document.addEventListener("input", e => {
   if (e.target.id !== "poisk") return;

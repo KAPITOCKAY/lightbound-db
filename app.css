@@ -196,3 +196,26 @@ details.podr>summary{cursor:pointer;color:var(--zol);letter-spacing:.15em;text-t
 .setk-b button{display:flex;gap:6px;align-items:center;background:#0b0c12;border:1px solid var(--rama);color:var(--tx);font:inherit;font-size:12px;padding:3px 8px 3px 3px;cursor:pointer}
 .setk-b button.vyb{border-color:var(--zol)}
 @media (max-width:860px){.plitki{grid-template-columns:repeat(auto-fill,minmax(104px,1fr));gap:6px}.plit-ik{width:56px;height:56px}.plit-ik img{width:48px;height:48px}}
+/* гудроллы */
+.gods2{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:10px;margin-top:6px}
+@media (max-width:860px){.gods2{grid-template-columns:minmax(0,1fr)}}
+.mts{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.mt{display:flex;flex-direction:column;align-items:center;width:70px;padding:4px 2px;background:#0b0c12;border:1px solid var(--rama);border-bottom:2px solid var(--leg);text-decoration:none;font-size:9px;text-align:center;line-height:1.15;color:var(--tx)}
+.mt.zol{border-bottom-color:var(--zol)}
+.mt:hover{border-color:var(--zol)}
+.mt img{width:44px;height:44px;object-fit:contain;image-rendering:pixelated}
+/* урон */
+.tbl{max-height:75vh;overflow:auto;border:1px solid var(--rama)}
+.tbl thead th{position:sticky;top:0;background:#151824;z-index:1}
+.tbl th.akt{color:#fff}
+.tbl td.skol{background:#16182a}
+.tv{display:inline-flex;flex-direction:column;align-items:flex-end;min-width:56px}
+.tv i{display:block;height:3px;background:var(--zol);margin-top:2px;align-self:stretch;opacity:.75;max-width:100%}
+/* коллекция */
+.plit-ik.em{background:var(--bg)}
+.plit-ik .mi{transform:scale(1.2)}
+.plit-ik .tm{display:block;width:48px;height:48px}
+.wcard .pr{border:0;padding:0;background:none}
+.tbl td:nth-child(1),.tbl td:nth-child(2){white-space:normal;min-width:120px}
+.tbl th{white-space:normal;vertical-align:bottom;font-size:11px}
+.tbl th,.tbl td{padding:5px 6px}
