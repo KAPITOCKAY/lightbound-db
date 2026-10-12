@@ -71,13 +71,34 @@ function kod(o) {
     if (x.k === "s") { const [st, k] = x.id.split("/"), it = ws[st].items[k];
       return ["s", n36(SETW().indexOf(st)), n36(Object.keys(ws[st].items).indexOf(k)), x.t1 ? n36(it.traits[0].indexOf(x.t1)) : "", x.t2 ? n36(it.traits[1].indexOf(x.t2)) : ""].join("."); }
     return ["e", n36(EXW().indexOf(x.id)), x.rt ? n36((EXR[x.id] || []).indexOf(x.rt)) : ""].join("."); });
-  const a = SLOTY_B.map(sl => { const x = o.a[sl]; if (!x) return ""; const inf = vesInfo(sl, x), st = STATY.map(g => n36(+x.st[g] || 0)), md = x.mod ? n36(MODS().indexOf(x.mod)) : "";
+  const a = SLOTY_B.map(sl => { const x = o.a[sl]; if (!x) return ""; const inf = vesInfo(sl, x), pr = ["max", "avg", "min"].findIndex(p => { const n = novyeStaty(inf, p); return STATY.every(g => n[g] === +x.st[g]); }),
+      st = pr >= 0 ? ["!" + pr] : STATY.map(g => n36(+x.st[g] || 0)), md = x.mod ? n36(MODS().indexOf(x.mod)) : "";
     if (x.k === "g") return ["g", n36(x.id), n36(RAR4.indexOf(x.r || "legendary")), md, ...st].join(".");
     return [x.k, n36((x.k === "s" ? SETA() : EXA()).indexOf(x.id)), md, ...st].join("."); });
   return "1~" + [sc, asp, fr, ...w, ...a].join("_");
 }
+// ссылка v2: тот же код, упакованный в байты → base64url (без точек, ~50 символов).
+// байт: число 0–245, 246–248 — ролл брони Макс/Средний/Мин, 250–253 — тип (a/s/e/g), 254 — граница раздела, 255 — пустое поле
+const TIPY = "aseg";
+function kod2(v1) {
+  const out = [];
+  v1.slice(2).split("_").forEach((sec, i) => {
+    if (i) out.push(254);
+    const f = sec === "" ? [] : sec.split(".");
+    out.push(Math.min(f.length, 249));
+    for (const x of f) out.push(x === "" ? 255 : x[0] === "!" ? 246 + +x[1] : TIPY.includes(x) ? 250 + TIPY.indexOf(x) : Math.min(245, parseInt(x, 36)));
+  });
+  return "2" + btoa(String.fromCharCode(...out)).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+}
+function raspak(str) {
+  const bin = atob(str.slice(1).replace(/-/g, "+").replace(/_/g, "/")), b = [...bin].map(c => c.charCodeAt(0)), secs = [];
+  let i = 0;
+  while (i < b.length) { const n = b[i++], f = []; for (let k = 0; k < n; k++) { const x = b[i++]; f.push(x === 255 ? "" : x >= 250 ? TIPY[x - 250] : x >= 246 ? "!" + (x - 246) : x.toString(36)); } secs.push(f.join(".")); if (b[i] === 254) i++; }
+  return "1~" + secs.join("_");
+}
 function razkod(str) {
   if (!str) return null;
+  if (str[0] === "2") { try { str = raspak(str); } catch { return null; } }
   if (!str.startsWith("1~")) { try { return JSON.parse(decodeURIComponent(escape(atob(str.replace(/-/g, "+").replace(/_/g, "/"))))); } catch { return null; } }
   try {
     const p = str.slice(2).split("_"), f = t => (t || "").split(".");
@@ -96,12 +117,14 @@ function razkod(str) {
       else x = {k: q[0], id: (q[0] === "s" ? SETA() : EXA())[r36(q[1])], mod: q[2] === "" ? null : MODS()[r36(q[2])], vals: q.slice(3)};
       const inf = vesInfo(sl, x); if (!inf || !inf.grp) return;
       // старые ссылки хранили только 2–3 стата — тогда ставим лучший настоящий ролл; новые — 6 статов, проверяем по правилам игры
+      const PR = ["max", "avg", "min"], pp = x.vals.length === 1 && x.vals[0][0] === "!" ? PR[+x.vals[0][1]] : null;
+      if (pp) { x.st = novyeStaty(inf, pp); x.p = pp; delete x.vals; o.a[sl] = x; return; }
       x.st = x.vals.length === 6 ? blizhajshij(Object.fromEntries(STATY.map((g, j) => [g, r36(x.vals[j]) || 0])), inf.grp, inf.rng).st : novyeStaty(inf, "max");
       x.p = "max"; delete x.vals; o.a[sl] = x; });
     return o;
   } catch { return null; }
 }
-const sohranit = () => history.replaceState(null, "", "#/build/" + kod(BS));
+const sohranit = () => history.replaceState(null, "", "#/build/" + kod2(kod(BS)));
 
 // ---------- расчёт статов (функции Gc/Kc/qc/Jc игры) ----------
 const vseVes = () => SLOTY_B.map(s => BS.a[s]).filter(Boolean);
