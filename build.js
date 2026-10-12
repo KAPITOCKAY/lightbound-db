@@ -38,9 +38,9 @@ const UB = {
     rarity: "Seltenheit"},
 };
 const ub = k => UB[lang][k];
-Object.assign(UB.ru, {change: "Сменить", close: "Закрыть", remove: "Убрать"});
-Object.assign(UB.en, {change: "Change", close: "Close", remove: "Remove"});
-Object.assign(UB.de, {change: "Wechseln", close: "Schließen", remove: "Entfernen"});
+Object.assign(UB.ru, {rollL: "Ролл", pr_max: "Макс", pr_avg: "Средний", pr_min: "Мин", totalL: "Сумма", realHint: "Только настоящие роллы: статы считаются по формуле игры, у брони все 6 статов. Цифры можно менять — сайт проверит, бывает ли так в игре.", snapped: "Такого ролла в игре нет — подогнал к ближайшему настоящему.", change: "Сменить", close: "Закрыть", remove: "Убрать"});
+Object.assign(UB.en, {rollL: "Roll", pr_max: "Max", pr_avg: "Average", pr_min: "Min", totalL: "Total", realHint: "Real rolls only: stats follow the game's formula, every armor piece has all 6 stats. Edit the numbers — the site checks the game can roll them.", snapped: "The game can't roll that — snapped to the nearest real roll.", change: "Change", close: "Close", remove: "Remove"});
+Object.assign(UB.de, {rollL: "Roll", pr_max: "Max", pr_avg: "Mittel", pr_min: "Min", totalL: "Summe", realHint: "Nur echte Rolls: Werte nach der Spielformel, jedes Teil hat alle 6 Werte. Zahlen änderbar — die Seite prüft, ob das Spiel sie rollen kann.", snapped: "So rollt das Spiel nicht — auf den nächsten echten Roll angepasst.", change: "Wechseln", close: "Schließen", remove: "Entfernen"});
 // значки строк «что дают статы»: свои глифы игры; уклон и классовая — значок выбранной способности
 const dGl = k => { const m = {moveSpeed: "stat_mobility", dr: "pf_shield", shield: "hud_shield", hp: "pf_heart", regenDelay: "pf_clock", regenRate: "stat_recovery",
   grenadeCd: "ability_grenade", meleeCd: "ability_melee", superTime: "ability_super", dodgeCd: "sub_" + BS.sc.movement, classCd: "sub_" + BS.sc.class}[k];
@@ -71,7 +71,7 @@ function kod(o) {
     if (x.k === "s") { const [st, k] = x.id.split("/"), it = ws[st].items[k];
       return ["s", n36(SETW().indexOf(st)), n36(Object.keys(ws[st].items).indexOf(k)), x.t1 ? n36(it.traits[0].indexOf(x.t1)) : "", x.t2 ? n36(it.traits[1].indexOf(x.t2)) : ""].join("."); }
     return ["e", n36(EXW().indexOf(x.id)), x.rt ? n36((EXR[x.id] || []).indexOf(x.rt)) : ""].join("."); });
-  const a = SLOTY_B.map(sl => { const x = o.a[sl]; if (!x) return ""; const inf = vesInfo(sl, x), st = inf.grp.map(g => n36(+x.st[g] || 0)), md = x.mod ? n36(MODS().indexOf(x.mod)) : "";
+  const a = SLOTY_B.map(sl => { const x = o.a[sl]; if (!x) return ""; const inf = vesInfo(sl, x), st = STATY.map(g => n36(+x.st[g] || 0)), md = x.mod ? n36(MODS().indexOf(x.mod)) : "";
     if (x.k === "g") return ["g", n36(x.id), n36(RAR4.indexOf(x.r || "legendary")), md, ...st].join(".");
     return [x.k, n36((x.k === "s" ? SETA() : EXA()).indexOf(x.id)), md, ...st].join("."); });
   return "1~" + [sc, asp, fr, ...w, ...a].join("_");
@@ -95,7 +95,9 @@ function razkod(str) {
       if (q[0] === "g") x = {k: "g", id: r36(q[1]), r: RAR4[r36(q[2])] || "legendary", mod: q[3] === "" ? null : MODS()[r36(q[3])], vals: q.slice(4)};
       else x = {k: q[0], id: (q[0] === "s" ? SETA() : EXA())[r36(q[1])], mod: q[2] === "" ? null : MODS()[r36(q[2])], vals: q.slice(3)};
       const inf = vesInfo(sl, x); if (!inf || !inf.grp) return;
-      x.st = Object.fromEntries(inf.grp.map((g, j) => [g, r36(x.vals[j]) || 0])); delete x.vals; o.a[sl] = x; });
+      // старые ссылки хранили только 2–3 стата — тогда ставим лучший настоящий ролл; новые — 6 статов, проверяем по правилам игры
+      x.st = x.vals.length === 6 ? blizhajshij(Object.fromEntries(STATY.map((g, j) => [g, r36(x.vals[j]) || 0])), inf.grp, inf.rng).st : novyeStaty(inf, "max");
+      x.p = "max"; delete x.vals; o.a[sl] = x; });
     return o;
   } catch { return null; }
 }
@@ -226,7 +228,33 @@ function vesInfo(slot, x) {
   if (x.k === "s") { const s = AS[x.id]; return {ic: s.icons[slot], n: s.items[slot], grp: s.group, rng: LB.B.bal.armour.pieceTotal, c: s.colour, en: LB.B.energy.legendary}; }
   return {ic: LB.B.aic[slot], n: sl(slot), grp: LB.groups[x.id], rng: LB.B.bal.armour.pieceTotal, c: rc[x.r || "legendary"], en: LB.B.energy[x.r || "legendary"]};
 }
-const rovno = (grp, total) => Object.fromEntries(grp.map((s, i) => [s, Math.floor(total / grp.length) + (i < total % grp.length ? 1 : 0)]));
+// статы брони ровно как роллит игра (функция wee в её коде): у брони есть все 6 статов,
+// вес стата = 1 + (основной ? 2.4 : 0) + случайное·0.8, минимум 2; остаток раздаётся по кругу, сначала основным
+function rollIgry(T, grp, rnd) {
+  const w = STATY.map((s, i) => 1 + (grp.includes(s) ? 2.4 : 0) + rnd(i) * .8), sum = w.reduce((a, b) => a + b, 0), a = {};
+  STATY.forEach((s, i) => a[s] = Math.max(2, Math.floor(T * w[i] / sum)));
+  let o = T - Object.values(a).reduce((x, y) => x + y, 0); const por = [...grp, ...STATY.filter(s => !grp.includes(s))];
+  for (let e = 0; o !== 0 && e < 200; e++) { const t = por[e % por.length]; if (o > 0) { a[t]++; o--; } else if (a[t] > 2) { a[t]--; o++; } }
+  return a;
+}
+const RASKL = {max: grp => i => grp.includes(STATY[i]) ? 1 : 0, avg: () => () => .5, min: grp => i => grp.includes(STATY[i]) ? 0 : 1};
+const presetT = (p, rng) => p === "max" ? rng[1] : p === "min" ? rng[0] : Math.round((rng[0] + rng[1]) / 2);
+const VALID = new Map();
+function realnye(T, grp) {   // все раскладки, которые игра реально может выдать при этой сумме
+  const k = T + "|" + grp.join(","); if (VALID.has(k)) return VALID.get(k);
+  const m = new Map(); let sd = 987654321; const r = () => (sd = (sd * 1103515245 + 12345) % 2147483648) / 2147483648;
+  for (let n = 0; n < 5000; n++) { const a = rollIgry(T, grp, () => r()); m.set(STATY.map(x => a[x]).join(","), a); }
+  for (const pr of Object.values(RASKL)) { const a = rollIgry(T, grp, pr(grp)); m.set(STATY.map(x => a[x]).join(","), a); }
+  const v = [...m.values()]; VALID.set(k, v); return v;
+}
+function blizhajshij(vals, grp, rng) {
+  const T = Math.max(rng[0], Math.min(rng[1], STATY.reduce((a, s) => a + (+vals[s] || 0), 0)));
+  let best = null, bd = 1e9;
+  for (const c of realnye(T, grp)) { const d = STATY.reduce((a, s) => a + Math.abs((+vals[s] || 0) - c[s]), 0); if (d < bd) { bd = d; best = c; } }
+  return {st: {...best}, tochno: bd === 0};
+}
+const VWARN = {};
+const novyeStaty = (inf, p) => rollIgry(presetT(p, inf.rng), inf.grp, RASKL[p](inf.grp));
 function redaktorBroni(slot) {
   const x = BS.a[slot], inf = vesInfo(slot, x);
   const kl = "a:" + slot, tek = x ? x.k + ":" + x.id : "";
@@ -235,13 +263,15 @@ function redaktorBroni(slot) {
     [ub("setL"), Object.entries(AS).map(([id, s2]) => ({v: "s:" + id, n: s2.items[slot], ic: s2.icons[slot], c: s2.colour, gr: s2.group.map(statGl).join("")}))],
     [ub("generic"), LB.groups.map((g, i) => ({v: "g:" + i, n: ub("generic"), ic: LB.B.aic[slot], c: rc.legendary, gr: g.map(statGl).join("")}))]], tek) : "";
   if (!inf) return `<div class="bblok"><h3>${sl(slot)}</h3>${sel}</div>`;
-  const sum = inf.grp.reduce((a, s) => a + (+x.st[s] || 0), 0), over = sum > inf.rng[1];
+  const sum = STATY.reduce((a, s) => a + (+x.st[s] || 0), 0);
   const rar = x.k === "g" ? `<div class="fil">${["common", "uncommon", "rare", "legendary"].map(r => `<button data-bar="${slot}|${r}" class="${(x.r || "legendary") === r ? "akt" : ""}" data-st="color:${rc[r]}">${u("rar")[r]}</button>`).join("")}</div>` : "";
   const mods = Object.keys(P).filter(m => m.startsWith("mods:") && P[m].s?.includes(slot) && (LB.MODC?.[m.slice(5)] ?? 0) <= inf.en);
   return `<div class="bblok"><h3>${sl(slot)}</h3><div class="kar" data-st="--c:${inf.c}">${img(inf.ic)}<span><b>${esc(inf.n)}</b><small>${inf.grp.map(statGl).join("")} · ${ub("energyL")(inf.en)}</small></span></div>${smena(kl, 1)}
     ${sel}${rar}${x.k === "e" ? `<div class="para">${perk("armor:" + x.id)}</div>` : ""}
-    <div class="bstaty">${inf.grp.map(s => `<label>${statGl(s)}${sl(s)}<input type="number" min="0" max="${inf.rng[1]}" value="${+x.st[s] || 0}" data-bst="${slot}|${s}"></label>`).join("")}</div>
-    <small class="${over ? "plokho" : "tiho"}">${ub("total")(sum, ...inf.rng)}${over ? " — " + ub("over") : ""}</small>
+    <div class="fil"><span class="tiho">${ub("rollL")}:</span>${["max", "avg", "min"].map(p => `<button data-bpr="${slot}|${p}" class="${x.p === p ? "akt" : ""}">${ub("pr_" + p)}</button>`).join("")}</div>
+    <div class="brng"><span>${ub("totalL")}</span><input type="range" min="${inf.rng[0]}" max="${inf.rng[1]}" value="${sum}" data-btot="${slot}"><b>${sum}</b><small class="tiho">${inf.rng[0]}–${inf.rng[1]}</small></div>
+    <div class="bstaty2">${STATY.map(s => `<label class="${inf.grp.includes(s) ? "osn" : ""}" title="${esc(sl(s))}">${statGl(s)}<input type="number" min="2" max="40" value="${+x.st[s] || 0}" data-bst="${slot}|${s}"></label>`).join("")}</div>
+    ${VWARN[slot] ? `<small class="plokho">${VWARN[slot]}</small>` : `<small class="tiho">${ub("realHint")}</small>`}
     ${mods.length ? `<div class="fil"><span class="tiho">${ub("mod")}:</span><button data-bmod="${slot}|" class="${x.mod ? "" : "akt"}">${ub("noMod")}</button>${mods.map(m =>
       `<button data-bmod="${slot}|${m.slice(5)}" class="${x.mod === m.slice(5) ? "akt" : ""}">${esc(pName(m))} (${LB.MODC?.[m.slice(5)] ?? "?"})</button>`).join("")}</div>` : ""}</div>`;
 }
@@ -306,11 +336,15 @@ function obrSelect(t) {
       BS.w[s] = k === "a" ? {k, id, fr: Object.keys(A[id].fr)[0], el: A[id].el[0]} : {k, id}; perersovat(); if (msg) $("#bMsg").textContent = ub("oneEx"); return; } perersovat(); }
   else if (t.dataset.bas) { const s = t.dataset.bas, v = t.value; if (!v) delete BS.a[s]; else { const k = v[0], id = k === "g" ? +v.slice(2) : v.slice(2);
       const msg = k === "e" && snyatEkzotik("a", s), inf = vesInfo(s, {k, id});
-      BS.a[s] = {k, id, st: rovno(inf.grp, inf.rng[1]), mod: null}; perersovat(); if (msg) $("#bMsg").textContent = ub("oneEx"); return; } perersovat(); }
-  else if (t.dataset.bst) { const [s, stat] = t.dataset.bst.split("|"); BS.a[s].st[stat] = Math.max(0, Math.min(100, +t.value || 0)); perersovat(); }
+      BS.a[s] = {k, id, st: novyeStaty(inf, "max"), p: "max", mod: null}; VWARN[s] = ""; perersovat(); if (msg) $("#bMsg").textContent = ub("oneEx"); return; } perersovat(); }
+  else if (t.dataset.bst) { const [s, stat] = t.dataset.bst.split("|"), x = BS.a[s], inf = vesInfo(s, x);
+    const v = {...x.st, [stat]: Math.max(0, +t.value || 0)}, r = blizhajshij(v, inf.grp, inf.rng);
+    x.st = r.st; x.p = null; VWARN[s] = r.tochno ? "" : ub("snapped"); perersovat(); }
+  else if (t.dataset.btot) { const s = t.dataset.btot, x = BS.a[s], inf = vesInfo(s, x), T = +t.value;
+    const pr = x.p || "avg"; x.st = rollIgry(T, inf.grp, RASKL[pr](inf.grp)); VWARN[s] = ""; perersovat(); }
 }
 document.addEventListener("click", e => {
-  const t = e.target.closest("[data-bpick],[data-bopen],[data-bclear],[data-bsc],[data-basp],[data-bfr],[data-bw],[data-bfix],[data-bwel],[data-bar],[data-bmod],#bCopy,#bReset");
+  const t = e.target.closest("[data-bpr],[data-bpick],[data-bopen],[data-bclear],[data-bsc],[data-basp],[data-bfr],[data-bw],[data-bfix],[data-bwel],[data-bar],[data-bmod],#bCopy,#bReset");
   if (!t) return;
   const opis = id => { const a = abInfo(id); const o = $("#scOpis"); if (o) o.innerHTML = `<b>${esc(a.n)}</b> — ${esc(a.d)}<br><small>${ub("unlock")}: ${esc(otkr(a))}</small>`; };
   if (t.dataset.bpick) { const i = t.dataset.bpick.indexOf("|", 2); postavit(t.dataset.bpick.slice(0, i), t.dataset.bpick.slice(i + 1)); return; }
@@ -328,6 +362,7 @@ document.addEventListener("click", e => {
   else if (t.dataset.bfix) { const [s, id] = t.dataset.bfix.split("|"); BFOK[s] = id; perersovat(); if (innerWidth < 860) info(id); }
   else if (t.dataset.bwel) { const [s, el] = t.dataset.bwel.split("|"); BS.w[s].el = el; perersovat(); }
   else if (t.dataset.bar) { const [s, r] = t.dataset.bar.split("|"); BS.a[s].r = r; const inf = vesInfo(s, BS.a[s]); if ((LB.MODC?.[BS.a[s].mod] ?? 0) > inf.en) BS.a[s].mod = null; perersovat(); }
+  else if (t.dataset.bpr) { const [s, p2] = t.dataset.bpr.split("|"), x = BS.a[s], inf = vesInfo(s, x); x.p = p2; x.st = novyeStaty(inf, p2); VWARN[s] = ""; perersovat(); }
   else if (t.dataset.bmod != null) { const [s, m] = t.dataset.bmod.split("|"); BS.a[s].mod = m || null; perersovat(); }
   else if (t.id === "bCopy") { sohranit(); const done = () => { $("#bMsg").textContent = ub("copied"); };
     navigator.clipboard?.writeText(location.href).then(done, () => { prompt(ub("copy"), location.href); }); }

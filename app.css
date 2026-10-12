@@ -257,3 +257,12 @@ details.podr>summary{cursor:pointer;color:var(--zol);letter-spacing:.15em;text-t
 .pgr{writing-mode:horizontal-tb;transform:none;width:64px;height:58px;display:flex;align-items:center;justify-content:center;font-size:8px;line-height:1.15;letter-spacing:.06em;padding:0 4px;overflow:hidden}
 .pstr{align-items:flex-start}
 @media (max-width:860px){.pgr{width:40px;font-size:7px;padding:0 2px;margin-left:2px}.pi2{width:52px;height:52px}.pi2 img{width:42px;height:42px}}
+/* билд: статы брони по правилам игры */
+.brng{display:flex;align-items:center;gap:8px;margin:6px 0;font-size:12px}
+.brng input[type=range]{flex:1;max-width:260px;accent-color:var(--zol)}
+.brng b{color:#fff;min-width:24px}
+.bstaty2{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:4px;margin:6px 0;max-width:420px}
+.bstaty2 label{display:flex;flex-direction:column;align-items:center;gap:2px;background:#0b0c12;border:1px solid var(--rama);padding:4px 2px}
+.bstaty2 label.osn{border-color:#6b5a1c}
+.bstaty2 .gl{margin:0}
+.bstaty2 input{width:100%;max-width:52px;background:#151824;color:var(--tx);border:1px solid var(--rama);padding:3px;font:inherit;font-size:12px;text-align:center}
