@@ -279,9 +279,10 @@ function redaktorBroni(slot) {
 }
 
 // ---------- подкласс ----------
+const scN = a => a.n, scD = a => tx("SC|" + a.id, 1, a.d); // названия как в игре (англ.), описания переведены
 const abInfo = id => [...Object.values(LB.B.ab).flat(), ...LB.B.asp, ...LB.B.frag].find(a => a.id === id);
 const scKnopka = (id, akt, data, metka = "") => { const a = abInfo(id);
-  return `<button class="sck${akt ? " akt" : ""}" ${data} title="${esc(a.n)}"><img src="img/${a.ic}.png" alt="">${metka ? `<i>${metka}</i>` : ""}<span>${esc(a.n)}</span></button>`; };
+  return `<button class="sck${akt ? " akt" : ""}" ${data} title="${esc(scN(a))}"><img src="img/${a.ic}.png" alt="">${metka ? `<i>${metka}</i>` : ""}<span>${esc(scN(a))}</span></button>`; };
 const fragMetka = f => Object.entries(f.st).map(([k, v]) => `${v > 0 ? "+" : "−"}${statGl(k)}`).join("");
 function redaktorPodklassa() {
   const slots = BS.asp.reduce((a, id) => a + (abInfo(id)?.sl || 0), 0);
@@ -292,7 +293,8 @@ function redaktorPodklassa() {
     <div id="scOpis" class="tiho"></div></div>`;
 }
 const otkr = a => { const u2 = a.u; if (!u2) return ub("start");
-  const [k, v] = Object.entries(u2)[0]; return k === "rank" ? ub("rank")(v) : k === "wisps" ? ub("wisps")(v) : `${ub(k) || k}: ${String(v).replace(/^(uc_|ev_)/, "").replace(/_/g, " ")}`; };
+  const [k, v] = Object.entries(u2)[0], tc = x => String(x).replace(/^(uc_|ev_|secret_)/, "").replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+  return k === "rank" ? ub("rank")(v) : k === "wisps" ? ub("wisps")(v) : `${ub(k) || k}: ${k === "event" && LB.EVN?.[v] ? LB.EVN[v] : tc(v)}`; };
 
 // ---------- итог ----------
 function itog() {
@@ -303,8 +305,8 @@ function itog() {
     return `<div class="bit">${img(inf.ic)}<div><b>${esc(inf.n)}</b><div class="mperk">${ids.map(id => `<button class="perk" data-p="${id}">${pi(id)}</button>`).join("")}</div>${ur ? `<small class="tiho">${ub("dps")}: ${ur.dpsM} · ${u("perShot")}: ${yach(ur, "v")}</small>` : ""}</div></div>`; }).join("");
   const cdK = {super: "superTime", grenade: "grenadeCd", melee: "meleeCd", class: "classCd", movement: "dodgeCd"};
   const abil = `<div class="babil">${SLOTY_A.map(sl2 => { const ab = abInfo(BS.sc[sl2]);
-    return `<span title="${esc(ab.n)}"><img src="img/${ab.ic}.png" alt=""><b>${R.d[cdK[sl2]][0]}</b><small>${ub(sl2)}</small></span>`; }).join("")}</div>
-    ${BS.asp.length || BS.frag.length ? `<div class="babil mal">${[...BS.asp, ...BS.frag].map(id => { const ab = abInfo(id); return `<span title="${esc(ab.n)}"><img src="img/${ab.ic}.png" alt=""></span>`; }).join("")}</div>` : ""}`;
+    return `<span title="${esc(scN(ab))}"><img src="img/${ab.ic}.png" alt=""><b>${R.d[cdK[sl2]][0]}</b><small>${ub(sl2)}</small></span>`; }).join("")}</div>
+    ${BS.asp.length || BS.frag.length ? `<div class="babil mal">${[...BS.asp, ...BS.frag].map(id => { const ab = abInfo(id); return `<span title="${esc(scN(ab))}"><img src="img/${ab.ic}.png" alt=""></span>`; }).join("")}</div>` : ""}`;
   return `<div class="bblok itog"><h3>${ub("sub")}</h3>${abil}<h3>${ub("stats")}</h3>${STATY.map(bar).join("")}
     <h3>${ub("derived")}</h3><table class="btab">${Object.entries(R.d).map(([k, v]) => `<tr><td>${dGl(k)}${ub(k + "S") || ub(k)}</td><td>${v[0]}</td></tr>`).join("")}</table>
     ${R.sets.length ? `<h3>${ub("sets")}</h3><div class="para">${R.sets.map(b => perk(b)).join("")}</div>` : ""}
@@ -348,7 +350,7 @@ function obrSelect(t) {
 document.addEventListener("click", e => {
   const t = e.target.closest("[data-bpr],[data-bpick],[data-bopen],[data-bclear],[data-bsc],[data-basp],[data-bfr],[data-bw],[data-bfix],[data-bwel],[data-bar],[data-bmod],#bCopy,#bReset");
   if (!t) return;
-  const opis = id => { const a = abInfo(id); const o = $("#scOpis"); if (o) o.innerHTML = `<b>${esc(a.n)}</b> — ${esc(a.d)}<br><small>${ub("unlock")}: ${esc(otkr(a))}</small>`; };
+  const opis = id => { const a = abInfo(id); const o = $("#scOpis"); if (o) o.innerHTML = `<b>${esc(scN(a))}</b>${lang !== "en" && scN(a) !== a.n ? ` <small class="tiho">(${esc(a.n)})</small>` : ""} — ${esc(scD(a))}<br><small>${ub("unlock")}: ${esc(otkr(a))}</small>`; };
   if (t.dataset.bpick) { const i = t.dataset.bpick.indexOf("|", 2); postavit(t.dataset.bpick.slice(0, i), t.dataset.bpick.slice(i + 1)); return; }
   if (t.dataset.bopen) { OTKR[t.dataset.bopen] = !OTKR[t.dataset.bopen]; perersovat(); return; }
   if (t.dataset.bclear) { const [vid, s2] = t.dataset.bclear.split(":"); delete (vid === "w" ? BS.w : BS.a)[s2]; OTKR[t.dataset.bclear] = false; perersovat(); return; }
