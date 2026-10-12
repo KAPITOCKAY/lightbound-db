@@ -266,3 +266,9 @@ details.podr>summary{cursor:pointer;color:var(--zol);letter-spacing:.15em;text-t
 .bstaty2 label.osn{border-color:#6b5a1c}
 .bstaty2 .gl{margin:0}
 .bstaty2 input{width:100%;max-width:52px;background:#151824;color:var(--tx);border:1px solid var(--rama);padding:3px;font:inherit;font-size:12px;text-align:center}
+/* ◆ совет сайта */
+.pk.sov{border-color:#2a6f74}
+.pk.sov i{color:#5fd6d9}
+.sovb{background:#0d1a1c;border:1px solid #23474a;border-left:3px solid #5fd6d9;padding:8px 10px;font-size:12px;color:#c9d6d6;margin:6px 0}
+.sovb b{color:#5fd6d9}
+.sovb .chip{margin-left:6px}

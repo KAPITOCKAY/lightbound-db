@@ -66,9 +66,9 @@ const U = {
     armorGod: s => `God Roll (unser Tipp): maximal <b>${s}</b> — das Set rollt in diese Werte.`, mods: "Rüstungsmods",
     groups: "Normale Rüstungswerte rollen in Gruppen", close: "Schließen"},
 };
-Object.assign(U.ru, {tapItem: "Нажмите на предмет, чтобы прочитать описание.", exoticsH: "Экзотики", tapPerk: "Нажмите на перк: тут появится описание, а сам перк попадёт в ваш ролл. Статы справа пересчитаются.", yourRoll: "Ваш ролл", rollHint: "Выберите по перку в колонках — соберётся ролл.", isGod: "Это гудролл", reset: "Сбросить", starHint2: "★ — перк гудролла. Наведите на иконку, чтобы увидеть название.", useGod: "Собрать этот ролл", more: "Подробнее", statsL: "Статы"});
-Object.assign(U.en, {tapItem: "Tap an item to read about it.", exoticsH: "Exotics", tapPerk: "Tap a perk: its description shows here and it goes into your roll. The stats update.", yourRoll: "Your roll", rollHint: "Pick one perk per column to build a roll.", isGod: "This is a god roll", reset: "Reset", starHint2: "★ — god-roll perk. Hover an icon to see its name.", useGod: "Build this roll", more: "More", statsL: "Stats"});
-Object.assign(U.de, {tapItem: "Tippe auf einen Gegenstand für die Beschreibung.", exoticsH: "Exotics", tapPerk: "Tippe auf einen Perk: hier erscheint die Beschreibung, und er kommt in deinen Roll. Die Werte aktualisieren sich.", yourRoll: "Dein Roll", rollHint: "Wähle je einen Perk pro Spalte für deinen Roll.", isGod: "Das ist ein God Roll", reset: "Zurücksetzen", starHint2: "★ — God-Roll-Perk. Fahre über ein Icon für den Namen.", useGod: "Diesen Roll bauen", more: "Mehr", statsL: "Werte"});
+Object.assign(U.ru, {sovT: "Совет сайта", sovD: (a, b) => `не правило игры. Фрейм — с наибольшим уроном в секунду с перезарядкой. Ствол, магазин и мастерворк — с наибольшей прибавкой к главным статам этого типа: ${a} и ${b}.`, sovBtn: "Собрать совет", tapItem: "Нажмите на предмет, чтобы прочитать описание.", exoticsH: "Экзотики", tapPerk: "Нажмите на перк: тут появится описание, а сам перк попадёт в ваш ролл. Статы справа пересчитаются.", yourRoll: "Ваш ролл", rollHint: "Выберите по перку в колонках — соберётся ролл.", isGod: "Это гудролл", reset: "Сбросить", starHint2: "★ — гудролл игры, ◆ — совет сайта. Наведите на иконку, чтобы увидеть название.", useGod: "Собрать этот ролл", more: "Подробнее", statsL: "Статы"});
+Object.assign(U.en, {sovT: "Site tip", sovD: (a, b) => `not a game rule. Frame: highest sustained DPS. Barrel, magazine and masterwork: the biggest boost to this type's key stats, ${a} and ${b}.`, sovBtn: "Build the tip", tapItem: "Tap an item to read about it.", exoticsH: "Exotics", tapPerk: "Tap a perk: its description shows here and it goes into your roll. The stats update.", yourRoll: "Your roll", rollHint: "Pick one perk per column to build a roll.", isGod: "This is a god roll", reset: "Reset", starHint2: "★ — the game's god roll, ◆ — site tip. Hover an icon to see its name.", useGod: "Build this roll", more: "More", statsL: "Stats"});
+Object.assign(U.de, {sovT: "Tipp der Seite", sovD: (a, b) => `keine Spielregel. Rahmen: höchster Dauer-DPS. Lauf, Magazin und Meisterwerk: größter Bonus auf die Hauptwerte dieses Typs, ${a} und ${b}.`, sovBtn: "Tipp bauen", tapItem: "Tippe auf einen Gegenstand für die Beschreibung.", exoticsH: "Exotics", tapPerk: "Tippe auf einen Perk: hier erscheint die Beschreibung, und er kommt in deinen Roll. Die Werte aktualisieren sich.", yourRoll: "Dein Roll", rollHint: "Wähle je einen Perk pro Spalte für deinen Roll.", isGod: "Das ist ein God Roll", reset: "Zurücksetzen", starHint2: "★ — God Roll des Spiels, ◆ — Tipp der Seite. Fahre über ein Icon für den Namen.", useGod: "Diesen Roll bauen", more: "Mehr", statsL: "Werte"});
 const SLOV = { // короткие игровые слова
   ru: {kinetic: "Кинетика", arc: "Молния", ember: "Огонь", void: "Пустота", helmet: "Шлем", gauntlets: "Перчатки", chest: "Нагрудник", legs: "Ботинки", cloak: "Плащ",
     primary: "основные", special: "особые", heavy: "тяжёлые", range: "Дальность", stability: "Стабильность", handling: "Удобство", reload: "Перезарядка", magnetism: "Магнетизм",
@@ -155,9 +155,24 @@ const godSpisok = gs => gs.length ? gs.map(g => `<div class="gr"><b class="n">�
 
 // ---------- страница оружия: перки иконками, справа описание, ролл, статы и урон ----------
 let ROLL = {}, ROLL_URL = "", FOKUS = null;
-const pk = (col, id, fixed) => { const g = zv(id), sel = ROLL[col] === id, n = pName(id);
-  return `<button class="pk${g ? " god" : ""}${sel && !fixed ? " vyb" : ""}${fixed ? " fix" : ""}" data-pk="${col}|${id}" title="${esc(n)}" aria-label="${esc(n)}">${pi(id)}${g ? "<i>★</i>" : ""}</button>`; };
-const wkol = (col, title, ids, sub, fixed) => { ids = ids.filter(x => !/:(null|undefined)?$/.test(x)); ids = [...ids.filter(zv), ...ids.filter(x => !zv(x))];
+// ◆ совет сайта (не правило игры): фрейм с наибольшим уроном/сек с перезарядкой; ствол, магазин и мастерворк —
+// больше всего прибавки к двум главным статам типа оружия (второй стат с весом 0.8, остальные статы ×0.25, +20 за +100% магазина)
+const KLUCH = {auto_rifle: ["stability", "range"], hand_cannon: ["range", "stability"], pulse_rifle: ["stability", "range"], scout_rifle: ["range", "stability"],
+  smg: ["stability", "range"], sidearm: ["range", "stability"], shotgun: ["range", "handling"], sniper_rifle: ["handling", "reload"], fusion_rifle: ["range", "stability"],
+  grenade_launcher: ["reload", "handling"], rocket_launcher: ["reload", "handling"], machine_gun: ["reload", "stability"], sword: ["handling", "reload"]};
+function sovety(k) {
+  const a = A[k], [s1, s2] = KLUCH[k] || ["range", "stability"];
+  const ochki = id => { const st = P[id]?.st || {}; let o = (st[s1] || 0) + (st[s2] || 0) * .8; for (const [x, v] of Object.entries(st)) if (x !== s1 && x !== s2) o += v * .25; return o + (P[id]?.mp || 0) * 20; };
+  const luch = ids => ids.length ? ids.reduce((b, id) => ochki(id) > ochki(b) ? id : b) : null;
+  const frs = Object.keys(a.fr).map(f => `frames:${k}_${f}`), fr = frs.reduce((b, id) => (URON[id.slice(7)]?.dpsM || 0) > (URON[b.slice(7)]?.dpsM || 0) ? id : b);
+  return {set: new Set([fr, luch(a.b.map(x => "barrels:" + x)), luch(a.m.map(x => "magazines:" + x)), "masterworks:" + s1].filter(Boolean)), fr, s1, s2,
+    roll: {fr, b: luch(a.b.map(x => "barrels:" + x)), m: luch(a.m.map(x => "magazines:" + x)), mw: "masterworks:" + s1}};
+}
+let SOV = new Set();
+const sv = id => SOV.has(id);
+const pk = (col, id, fixed) => { const g = zv(id), sel = ROLL[col] === id, n = pName(id), d = sv(id);
+  return `<button class="pk${g ? " god" : ""}${d ? " sov" : ""}${sel && !fixed ? " vyb" : ""}${fixed ? " fix" : ""}" data-pk="${col}|${id}" title="${esc(n)}" aria-label="${esc(n)}">${pi(id)}${g ? "<i>★</i>" : d ? "<i>◆</i>" : ""}</button>`; };
+const wkol = (col, title, ids, sub, fixed) => { ids = ids.filter(x => !/:(null|undefined)?$/.test(x)); ids = [...ids.filter(x => zv(x) || sv(x)), ...ids.filter(x => !zv(x) && !sv(x))];
   if (fixed && ids.length === 1 && ROLL[col] == null) ROLL[col] = ids[0];
   return `<div class="wk${sub === 0 ? " pusto" : ""}${ids.length > 14 ? " shir" : ids.length > 8 ? " dve" : ""}"><b>${title}</b>${sub != null ? `<small>${u("drops")(sub)}</small>` : ""}<div class="wk-g">${ids.map(x => pk(col, x, fixed)).join("") || '<span class="tiho">—</span>'}</div></div>`; };
 function statyRoll(arch) {
@@ -191,6 +206,7 @@ const podrobnee = html => `<details class="podr"><summary>${u("more")}</summary>
 
 function stranicaTip(k, r) {
   const a = A[k]; r = RAR.includes(r) ? r : "legendary";
+  const SV2 = sovety(k); SOV = SV2.set;
   const c = pc[r], pref = p => x => p + x, gs = zvezdy(r === "legendary" ? godDlya(a.t1, a.t2) : []);
   const shapka = `<div class="shapka" data-st="--c:${rc[r]}">${img(a.ic, 1)}<div><h1>${esc(aName(k))}</h1><p>${u("rarInfo")(r)}</p>
   <small class="tiho">${u("elements")}: ${a.el.map(elem).join(", ")} · ${u("ammo")}: ${gl("ammo_" + a.ammo, sl(a.ammo))}${sl(a.ammo)}</small></div></div>`;
@@ -201,7 +217,8 @@ function stranicaTip(k, r) {
     + wkol("t2", u("t2"), a.t2.map(pref("traits:")), c.trait2) + wkol("mw", u("mwork"), mw.map(pref("masterworks:")));
   const niz = `<h2>${u("godFor")} ${esc(aName(k))}</h2>${r === "legendary" ? godKarty(gs) : `<p class="tiho">${u("noGodRar")}</p>`}
   ${podrobnee(`<h2>${u("frames")}</h2>${Object.entries(a.fr).map(([f, v]) => `<div class="gr"><b class="n">${esc(tx(`F|${k}|${f}`, 0, v.n))}</b><p>${esc(tx(`F|${k}|${f}`, 1, v.d))}</p></div>`).join("")}${uronBlok(k, "")}`)}`;
-  return wStranica(shapka, filtry, cols, k, Object.keys(a.fr)[0], niz);
+  const sovBlok = `<div class="sovb"><b>◆ ${u("sovT")}</b> ${u("sovD")(sl(SV2.s1), sl(SV2.s2))} <button class="chip" data-sovroll="${[SV2.roll.fr, SV2.roll.b, SV2.roll.m, SV2.roll.mw].join(",")}">${u("sovBtn")}</button></div>`;
+  return wStranica(shapka, filtry + sovBlok, cols, k, Object.keys(a.fr)[0], niz);
 }
 
 function stranicaSet(s, k) {
@@ -348,7 +365,7 @@ function stranicaKol(sec) {
 function pokaz() {
   const [r, ...p] = location.hash.replace(/^#\/?/, "").split("/");
   if (location.hash !== ROLL_URL) { ROLL = {}; FOKUS = null; ROLL_URL = location.hash; }
-  ZV = GOD_PERKS;
+  ZV = GOD_PERKS; SOV = new Set();
   const v = r === "w" ? (p[0] === "a" && A[p[1]] ? stranicaTip(p[1], p[2]) : p[0] === "s" && ws[p[1]]?.items[p[2]] ? stranicaSet(p[1], p[2])
     : p[0] === "e" && ex[p[1]] ? stranicaEkzotik(p[1]) : stranicaOruzhie())
     : r === "build" ? stranicaBild(p[0]) : r === "god" ? stranicaGod() : r === "armor" ? stranicaBronya() : r === "col" ? stranicaKol(p[0]) : r === "dmg" ? stranicaUron() : stranicaOruzhie();
@@ -368,13 +385,14 @@ function info(id) {
 }
 
 document.addEventListener("click", e => {
-  const t = e.target.closest("[data-kf],[data-af],[data-pk],[data-rollreset],[data-p],[data-f],[data-rar],[data-dt],[data-sort],[data-el],[data-god],[data-lang],#info .x");
+  const t = e.target.closest("[data-sovroll],[data-kf],[data-af],[data-pk],[data-rollreset],[data-p],[data-f],[data-rar],[data-dt],[data-sort],[data-el],[data-god],[data-lang],#info .x");
   if (!t) return;
   if (t.dataset.pk) { const [col, id] = t.dataset.pk.split("|"); const fix = t.classList.contains("fix");
     ROLL[col] = ROLL[col] === id && !fix ? undefined : id; FOKUS = id; const y = scrollY; pokaz(); scrollTo(0, y); if (innerWidth < 860) info(id); return; }
   if (t.dataset.kf) { KFOK = t.dataset.kf; const y = scrollY; pokaz(); scrollTo(0, y);
     if (innerWidth < 860) { $("#info").innerHTML = `<button class="x" aria-label="${u("close")}">✕</button>` + $("#kolKarta").innerHTML; stili($("#info")); $("#info").hidden = false; } return; }
   if (t.dataset.af) { AFOK = t.dataset.af; const y = scrollY; pokaz(); scrollTo(0, y); if (innerWidth < 860) info(AFOK); return; }
+  if (t.dataset.sovroll) { const [fr, b, m, mwk] = t.dataset.sovroll.split(","); Object.assign(ROLL, {fr, b, m, mw: mwk}); FOKUS = b || fr; const y = scrollY; pokaz(); scrollTo(0, y); return; }
   if (t.dataset.rollreset) { ROLL = {}; FOKUS = null; const y = scrollY; pokaz(); scrollTo(0, y); return; }
   if (t.matches("#info .x")) $("#info").hidden = true;
   else if (t.dataset.lang) { lang = t.dataset.lang; try { localStorage.setItem("lang", lang); } catch {} pokaz(); }

@@ -157,8 +157,9 @@ const vyborKol = (slot, pole, title, ids, cur) => `<div class="kol"><i>${title}<
 const BFOK = {};
 const ikKol = (slot, pole, title, ids, cur, fixed) => { ids = ids.filter(x => !/:(null|undefined)?$/.test(x));
   return `<div class="wk${ids.length > 14 ? " shir" : ids.length > 8 ? " dve" : ""}"><b>${title}</b><div class="wk-g">${ids.map(id => {
-    const v = id.split(":").slice(1).join(":"), n = pName(id), sel = !fixed && cur === v;
-    return `<button class="pk${sel ? " vyb" : ""}${fixed ? " fix" : ""}" ${fixed ? `data-bfix="${slot}|${id}"` : `data-bw="${slot}|${pole}|${v}"`} title="${esc(n)}">${pi(id)}</button>`; }).join("")}</div></div>`; };
+    const v = id.split(":").slice(1).join(":"), n = pName(id), sel = !fixed && cur === v, d = BSOV.has(id);
+    return `<button class="pk${sel ? " vyb" : ""}${d ? " sov" : ""}${fixed ? " fix" : ""}" ${fixed ? `data-bfix="${slot}|${id}"` : `data-bw="${slot}|${pole}|${v}"`} title="${esc(n)}">${pi(id)}${d ? "<i>◆</i>" : ""}</button>`; }).join("")}</div></div>`; };
+let BSOV = new Set();
 // все перки, которые сейчас стоят на пушке (для статов и итога)
 function perkiPushki(w) {
   if (!w) return [];
@@ -196,6 +197,7 @@ function redaktorPushki(slot) {
   const sel = (!w || OTKR[kl]) ? vyborKartinkami(kl, ["exo", "named", "typ"].map(g => [ub(g), opts.filter(o => o.g === g)]), tek) : "";
   if (!inf) return `<div class="bblok"><h3>${ub(slot)}</h3>${sel}</div>`;
   let kol = "", el = "";
+  BSOV = w.k === "a" ? sovety(w.id).set : new Set();
   if (w.k === "a") {
     const a = A[w.id], p = x => y => x + y;
     kol = ikKol(slot, "fr", u("frame"), Object.keys(a.fr).map(f => `frames:${w.id}_${f}`), `${w.id}_${w.fr}`)
