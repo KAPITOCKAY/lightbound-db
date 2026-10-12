@@ -38,6 +38,13 @@ const UB = {
     rarity: "Seltenheit"},
 };
 const ub = k => UB[lang][k];
+// значки строк «что дают статы»: свои глифы игры; уклон и классовая — значок выбранной способности
+const dGl = k => { const m = {moveSpeed: "stat_mobility", dr: "pf_shield", shield: "hud_shield", hp: "pf_heart", regenDelay: "pf_clock", regenRate: "stat_recovery",
+  grenadeCd: "ability_grenade", meleeCd: "ability_melee", superTime: "ability_super", dodgeCd: "sub_" + BS.sc.movement, classCd: "sub_" + BS.sc.class}[k];
+  return m ? gl(m, ub(k)) : ""; };
+Object.assign(UB.ru, {moveSpeedS: "Скорость бега", dodgeCdS: "Уклон", drS: "Снижение урона", shieldS: "Щит", hpS: "Здоровье", regenDelayS: "Задержка щита", regenRateS: "Реген щита", grenadeCdS: "Граната", meleeCdS: "Удар", classCdS: "Классовая", superTimeS: "Супер"});
+Object.assign(UB.en, {moveSpeedS: "Move speed", dodgeCdS: "Dodge", drS: "Damage reduction", shieldS: "Shield", hpS: "Health", regenDelayS: "Shield delay", regenRateS: "Shield regen", grenadeCdS: "Grenade", meleeCdS: "Melee", classCdS: "Class", superTimeS: "Super"});
+Object.assign(UB.de, {moveSpeedS: "Lauftempo", dodgeCdS: "Ausweichen", drS: "Schadensreduktion", shieldS: "Schild", hpS: "Leben", regenDelayS: "Schild-Verzögerung", regenRateS: "Schild-Regen", grenadeCdS: "Granate", meleeCdS: "Nahkampf", classCdS: "Klasse", superTimeS: "Super"});
 const SLOTY_A = ["super", "grenade", "melee", "class", "movement"];
 const SLOTY_W = ["kinetic", "energy", "power"];
 const SLOTY_B = ["helmet", "gauntlets", "chest", "legs", "cloak"];
@@ -141,30 +148,63 @@ function pushkaInfo(w) {
 }
 const vyborKol = (slot, pole, title, ids, cur) => `<div class="kol"><i>${title}</i>${ids.filter(x => !/:(null|undefined)?$/.test(x)).map(id =>
   `<button class="perk${cur === id.split(":").slice(1).join(":") ? " vybor" : ""}" data-bw="${slot}|${pole}|${id.split(":").slice(1).join(":")}">${pi(id)}<span>${esc(pName(id))}</span></button>`).join("")}</div>`;
+// перки пушки иконками, как на странице оружия; постоянные перки — просто показ (нажатие открывает описание)
+const BFOK = {};
+const ikKol = (slot, pole, title, ids, cur, fixed) => { ids = ids.filter(x => !/:(null|undefined)?$/.test(x));
+  return `<div class="wk${ids.length > 14 ? " shir" : ids.length > 8 ? " dve" : ""}"><b>${title}</b><div class="wk-g">${ids.map(id => {
+    const v = id.split(":").slice(1).join(":"), n = pName(id), sel = !fixed && cur === v;
+    return `<button class="pk${sel ? " vyb" : ""}${fixed ? " fix" : ""}" ${fixed ? `data-bfix="${slot}|${id}"` : `data-bw="${slot}|${pole}|${v}"`} title="${esc(n)}">${pi(id)}</button>`; }).join("")}</div></div>`; };
+// все перки, которые сейчас стоят на пушке (для статов и итога)
+function perkiPushki(w) {
+  if (!w) return [];
+  if (w.k === "a") return [`frames:${w.id}_${w.fr}`, w.b && "barrels:" + w.b, w.m && "magazines:" + w.m, w.t1 && "traits:" + w.t1, w.t2 && "traits:" + w.t2, w.mw && "masterworks:" + w.mw].filter(Boolean);
+  if (w.k === "s") { const [st, k] = w.id.split("/"), it = ws[st].items[k];
+    return [`frames:${it.arch}_${it.frame}`, "barrels:" + it.barrel, "magazines:" + it.magazine, w.t1 && "traits:" + w.t1, w.t2 && "traits:" + w.t2, "set_perks:" + ws[st].perk].filter(Boolean); }
+  const e = ex[w.id], ik = P["intrinsics:" + w.id] ? w.id : w.id.replace(/^the_/, "");
+  return [`frames:${e.arch}_${e.frame}`, "intrinsics:" + ik, e.barrel && "barrels:" + e.barrel, e.magazine && "magazines:" + e.magazine, w.rt && "traits:" + w.rt, "masterworks:" + e.masterwork].filter(Boolean);
+}
+function statyPushki(arch, ids) {
+  const plus = {};
+  for (const id of ids) for (const [k, v] of Object.entries(P[id]?.st || {})) plus[k] = (plus[k] || 0) + v;
+  return Object.entries(A[arch].base).map(([k, v]) => { const d = plus[k] || 0, t = Math.max(0, Math.min(100, v + d));
+    return `<div class="stat"><span>${sl(k)}</span><span><b data-st="width:${Math.min(v, t)}%"></b>${d > 0 ? `<b class="plus" data-st="width:${t - v}%"></b>` : d < 0 ? `<b class="minus" data-st="width:${v - t}%"></b>` : ""}</span><span>${t}${d ? ` <small class="${d > 0 ? "zel" : "plokho"}">${d > 0 ? "+" : ""}${d}</small>` : ""}</span></div>`; }).join("");
+}
+function uronPushki(inf, ids) {
+  const ur = URON[`${inf.arch}_${inf.fr}`]; if (!ur) return "";
+  const mp = ids.reduce((a, id) => a + (P[id]?.mp || 0), 0);
+  return `<table class="btab"><tr><td>${u("perShot")}</td><td>${yach(ur, "v")}</td></tr><tr><td>${u("head")}</td><td>${yach(ur, "k")}</td></tr>
+    <tr><td>${u("rpmL")}</td><td>${ur.rpm}</td></tr><tr><td>${u("magL")}</td><td>${mp ? `${Math.round(ur.mag * (1 + mp))} <small class="zel">(${ur.mag})</small>` : ur.mag}</td></tr>
+    <tr><td>${u("dpsL")}</td><td>${ur.dps}</td></tr><tr><td>${u("dpsML")}</td><td>${ur.dpsM}</td></tr></table>`;
+}
 function redaktorPushki(slot) {
   const w = BS.w[slot], inf = pushkaInfo(w), opts = vsePushki(slot);
   const sel = `<select class="bsel" data-bws="${slot}"><option value="">${ub("pick")}</option>${["typ", "named", "exo"].map(g =>
     `<optgroup label="${ub(g)}">${opts.filter(o => o.g === g).map(o => `<option value="${o.v}"${w && o.v === w.k + ":" + w.id ? " selected" : ""}>${esc(o.n)}</option>`).join("")}</optgroup>`).join("")}</select>`;
-  let kol = "";
-  if (w?.k === "a") {
+  if (!inf) return `<div class="bblok"><h3>${ub(slot)}</h3>${sel}</div>`;
+  let kol = "", el = "";
+  if (w.k === "a") {
     const a = A[w.id], p = x => y => x + y;
-    kol = vyborKol(slot, "fr", u("frame"), Object.keys(a.fr).map(f => `frames:${w.id}_${f}`), `${w.id}_${w.fr}`)
-      + vyborKol(slot, "b", u("barrel"), a.b.map(p("barrels:")), w.b) + vyborKol(slot, "m", u("mag"), a.m.map(p("magazines:")), w.m)
-      + vyborKol(slot, "t1", u("t1"), a.t1.map(p("traits:")), w.t1) + vyborKol(slot, "t2", u("t2"), a.t2.map(p("traits:")), w.t2)
-      + vyborKol(slot, "mw", u("mwork"), mw.map(p("masterworks:")), w.mw);
-    kol = `<div class="fil">${a.el.map(e => `<button data-bwel="${slot}|${e}" class="${(w.el || a.el[0]) === e ? "akt" : ""}">${sl(e)}</button>`).join("")}</div><div class="kolonki">${kol}</div>`;
-  } else if (w?.k === "s") {
+    kol = ikKol(slot, "fr", u("frame"), Object.keys(a.fr).map(f => `frames:${w.id}_${f}`), `${w.id}_${w.fr}`)
+      + ikKol(slot, "b", u("barrel"), a.b.map(p("barrels:")), w.b) + ikKol(slot, "m", u("mag"), a.m.map(p("magazines:")), w.m)
+      + ikKol(slot, "t1", u("t1"), a.t1.map(p("traits:")), w.t1) + ikKol(slot, "t2", u("t2"), a.t2.map(p("traits:")), w.t2)
+      + ikKol(slot, "mw", u("mwork"), mw.map(p("masterworks:")), w.mw);
+    el = `<div class="fil">${a.el.map(e => `<button data-bwel="${slot}|${e}" class="${(w.el || a.el[0]) === e ? "akt" : ""}">${gl("element_" + e, sl(e))}${sl(e)}</button>`).join("")}</div>`;
+  } else if (w.k === "s") {
     const it = inf.it;
-    kol = `<div class="kolonki">${kol0(`frames:${it.arch}_${it.frame}`)}${kol0("barrels:" + it.barrel)}${kol0("magazines:" + it.magazine)}
-      ${vyborKol(slot, "t1", u("t1"), it.traits[0].map(x => "traits:" + x), w.t1)}${vyborKol(slot, "t2", u("t2"), it.traits[1].map(x => "traits:" + x), w.t2)}${kol0("set_perks:" + ws[inf.set].perk)}</div>`;
-  } else if (w?.k === "e") {
+    kol = ikKol(slot, "", u("frame"), [`frames:${it.arch}_${it.frame}`], null, 1) + ikKol(slot, "", u("barrel"), ["barrels:" + it.barrel], null, 1) + ikKol(slot, "", u("mag"), ["magazines:" + it.magazine], null, 1)
+      + ikKol(slot, "t1", u("t1"), it.traits[0].map(x => "traits:" + x), w.t1) + ikKol(slot, "t2", u("t2"), it.traits[1].map(x => "traits:" + x), w.t2) + ikKol(slot, "", u("setPerk"), ["set_perks:" + ws[inf.set].perk], null, 1);
+  } else {
     const e = inf.e, ik = P["intrinsics:" + w.id] ? w.id : w.id.replace(/^the_/, "");
-    kol = `<div class="kolonki">${kol0(`frames:${e.arch}_${e.frame}`)}${kol0("intrinsics:" + ik)}${e.barrel ? kol0("barrels:" + e.barrel) : ""}${e.magazine ? kol0("magazines:" + e.magazine) : ""}
-      ${vyborKol(slot, "rt", u("random"), (EXR[w.id] || []).map(x => "traits:" + x), w.rt)}${kol0("masterworks:" + e.masterwork)}</div>`;
+    kol = ikKol(slot, "", u("frame"), [`frames:${e.arch}_${e.frame}`], null, 1) + ikKol(slot, "", u("exPerk"), ["intrinsics:" + ik], null, 1)
+      + (e.barrel ? ikKol(slot, "", u("barrel"), ["barrels:" + e.barrel], null, 1) : "") + (e.magazine ? ikKol(slot, "", u("mag"), ["magazines:" + e.magazine], null, 1) : "")
+      + ikKol(slot, "rt", u("random"), (EXR[w.id] || []).map(x => "traits:" + x), w.rt) + ikKol(slot, "", u("mwork"), ["masterworks:" + e.masterwork], null, 1);
   }
-  return `<div class="bblok"><h3>${ub(slot)}</h3>${inf ? `<div class="kar" data-st="--c:${inf.c}">${img(inf.ic)}<span><b>${esc(inf.n)}</b><small>${esc(aName(inf.arch))}</small></span></div>` : ""}${sel}${kol}</div>`;
+  const ids = perkiPushki(w), f = BFOK[slot] && P[BFOK[slot]];
+  const opis = f ? `<div class="wfok"><div>${pi(BFOK[slot])}<b>${esc(pName(BFOK[slot]))}</b></div><p>${esc(tx(trKey(BFOK[slot]), 1, f.d))}</p></div>` : `<p class="tiho">${u("tapPerk")}</p>`;
+  return `<div class="bblok"><h3>${ub(slot)}</h3><div class="bw-h"><div class="kar" data-st="--c:${inf.c}">${img(inf.ic)}<span><b>${esc(inf.n)}</b><small>${esc(aName(inf.arch))}${w.k === "a" ? " · " + sl(w.el || A[w.id].el[0]) : inf.e ? " · " + sl(inf.e.element) : inf.it ? " · " + sl(inf.it.element) : ""}</small></span></div>${sel}</div>
+    ${el}<div class="wkols">${kol}</div>
+    <div class="bw-niz"><div class="wcard">${opis}</div><div class="wcard"><h3>${u("statsL")}</h3>${statyPushki(inf.arch, ids)}</div><div class="wcard"><h3>${u("dmg")}</h3>${uronPushki(inf, ids)}</div></div></div>`;
 }
-const kol0 = id => `<div class="kol"><i>&nbsp;</i>${perk(id)}</div>`;
 
 // ---------- броня ----------
 const exBronya = slot => Object.entries(ex).filter(([, e]) => e.kind === "armor" && e.bucket === slot);
@@ -185,9 +225,9 @@ function redaktorBroni(slot) {
   const sum = inf.grp.reduce((a, s) => a + (+x.st[s] || 0), 0), over = sum > inf.rng[1];
   const rar = x.k === "g" ? `<div class="fil">${["common", "uncommon", "rare", "legendary"].map(r => `<button data-bar="${slot}|${r}" class="${(x.r || "legendary") === r ? "akt" : ""}" data-st="color:${rc[r]}">${u("rar")[r]}</button>`).join("")}</div>` : "";
   const mods = Object.keys(P).filter(m => m.startsWith("mods:") && P[m].s?.includes(slot) && (LB.MODC?.[m.slice(5)] ?? 0) <= inf.en);
-  return `<div class="bblok"><h3>${sl(slot)}</h3><div class="kar" data-st="--c:${inf.c}">${img(inf.ic)}<span><b>${esc(inf.n)}</b><small>${inf.grp.map(sl).join(" + ")} · ${ub("energyL")(inf.en)}</small></span></div>
+  return `<div class="bblok"><h3>${sl(slot)}</h3><div class="kar" data-st="--c:${inf.c}">${img(inf.ic)}<span><b>${esc(inf.n)}</b><small>${inf.grp.map(statGl).join("")} · ${ub("energyL")(inf.en)}</small></span></div>
     ${sel}${rar}${x.k === "e" ? `<div class="para">${perk("armor:" + x.id)}</div>` : ""}
-    <div class="bstaty">${inf.grp.map(s => `<label>${sl(s)}<input type="number" min="0" max="${inf.rng[1]}" value="${+x.st[s] || 0}" data-bst="${slot}|${s}"></label>`).join("")}</div>
+    <div class="bstaty">${inf.grp.map(s => `<label>${statGl(s)}${sl(s)}<input type="number" min="0" max="${inf.rng[1]}" value="${+x.st[s] || 0}" data-bst="${slot}|${s}"></label>`).join("")}</div>
     <small class="${over ? "plokho" : "tiho"}">${ub("total")(sum, ...inf.rng)}${over ? " — " + ub("over") : ""}</small>
     ${mods.length ? `<div class="fil"><span class="tiho">${ub("mod")}:</span><button data-bmod="${slot}|" class="${x.mod ? "" : "akt"}">${ub("noMod")}</button>${mods.map(m =>
       `<button data-bmod="${slot}|${m.slice(5)}" class="${x.mod === m.slice(5) ? "akt" : ""}">${esc(pName(m))} (${LB.MODC?.[m.slice(5)] ?? "?"})</button>`).join("")}</div>` : ""}</div>`;
@@ -197,7 +237,7 @@ function redaktorBroni(slot) {
 const abInfo = id => [...Object.values(LB.B.ab).flat(), ...LB.B.asp, ...LB.B.frag].find(a => a.id === id);
 const scKnopka = (id, akt, data, metka = "") => { const a = abInfo(id);
   return `<button class="sck${akt ? " akt" : ""}" ${data} title="${esc(a.n)}"><img src="img/${a.ic}.png" alt="">${metka ? `<i>${metka}</i>` : ""}<span>${esc(a.n)}</span></button>`; };
-const fragMetka = f => Object.entries(f.st).map(([k, v]) => `${v > 0 ? "+" : "−"}${sl(k).slice(0, 3)}`).join(" ");
+const fragMetka = f => Object.entries(f.st).map(([k, v]) => `${v > 0 ? "+" : "−"}${statGl(k)}`).join("");
 function redaktorPodklassa() {
   const slots = BS.asp.reduce((a, id) => a + (abInfo(id)?.sl || 0), 0);
   return `<div class="bblok"><h3>${esc(LB.B.name)}</h3>
@@ -212,12 +252,16 @@ const otkr = a => { const u2 = a.u; if (!u2) return ub("start");
 // ---------- итог ----------
 function itog() {
   const R = raschet();
-  const bar = s => `<div class="stat"><span>${sl(s)}</span><span><b data-st="width:${Math.min(R.tot[s], 100)}%"></b></span><span>${R.tot[s]} <b class="tir">T${R.tier[s]}</b></span></div>`;
+  const bar = s => `<div class="stat sg"><span>${statGl(s)}</span><span><b data-st="width:${Math.min(R.tot[s], 100)}%"></b></span><span>${R.tot[s]} <b class="tir">T${R.tier[s]}</b></span></div>`;
   const pushki = SLOTY_W.map(s => { const w = BS.w[s], inf = pushkaInfo(w); if (!inf) return "";
-    const ur = URON[`${inf.arch}_${inf.fr}`], ids = w.k === "a" ? [["barrels", w.b], ["magazines", w.m], ["traits", w.t1], ["traits", w.t2], ["masterworks", w.mw]] : w.k === "s" ? [["traits", w.t1], ["traits", w.t2]] : [["traits", w.rt]];
-    return `<div class="bit">${img(inf.ic)}<div><b>${esc(inf.n)}</b><div class="mperk">${ids.filter(([, v]) => v).map(([a, v]) => `<button class="perk" data-p="${a}:${v}">${pi(a + ":" + v)}</button>`).join("")}</div>${ur ? `<small class="tiho">${ub("dps")}: ${ur.dpsM}</small>` : ""}</div></div>`; }).join("");
-  return `<div class="bblok itog"><h3>${ub("stats")}</h3>${STATY.map(bar).join("")}
-    <h3>${ub("derived")}</h3><table class="btab">${Object.entries(R.d).map(([k, v]) => `<tr><td>${ub(k)}</td><td>${v[0]}</td></tr>`).join("")}</table>
+    const ur = URON[`${inf.arch}_${inf.fr}`], ids = perkiPushki(w).filter(id => !id.startsWith("frames:"));
+    return `<div class="bit">${img(inf.ic)}<div><b>${esc(inf.n)}</b><div class="mperk">${ids.map(id => `<button class="perk" data-p="${id}">${pi(id)}</button>`).join("")}</div>${ur ? `<small class="tiho">${ub("dps")}: ${ur.dpsM} · ${u("perShot")}: ${yach(ur, "v")}</small>` : ""}</div></div>`; }).join("");
+  const cdK = {super: "superTime", grenade: "grenadeCd", melee: "meleeCd", class: "classCd", movement: "dodgeCd"};
+  const abil = `<div class="babil">${SLOTY_A.map(sl2 => { const ab = abInfo(BS.sc[sl2]);
+    return `<span title="${esc(ab.n)}"><img src="img/${ab.ic}.png" alt=""><b>${R.d[cdK[sl2]][0]}</b><small>${ub(sl2)}</small></span>`; }).join("")}</div>
+    ${BS.asp.length || BS.frag.length ? `<div class="babil mal">${[...BS.asp, ...BS.frag].map(id => { const ab = abInfo(id); return `<span title="${esc(ab.n)}"><img src="img/${ab.ic}.png" alt=""></span>`; }).join("")}</div>` : ""}`;
+  return `<div class="bblok itog"><h3>${ub("sub")}</h3>${abil}<h3>${ub("stats")}</h3>${STATY.map(bar).join("")}
+    <h3>${ub("derived")}</h3><table class="btab">${Object.entries(R.d).map(([k, v]) => `<tr><td>${dGl(k)}${ub(k + "S") || ub(k)}</td><td>${v[0]}</td></tr>`).join("")}</table>
     ${R.sets.length ? `<h3>${ub("sets")}</h3><div class="para">${R.sets.map(b => perk(b)).join("")}</div>` : ""}
     ${R.mods.length ? `<h3>${ub("fx")}</h3><div class="para">${R.mods.map(m => perk("mods:" + m)).join("")}</div>` : ""}
     ${pushki ? `<h3>${ub("weapons")}</h3>${pushki}` : ""}
@@ -248,7 +292,7 @@ document.addEventListener("change", e => {
   else if (t.dataset.bst) { const [s, stat] = t.dataset.bst.split("|"); BS.a[s].st[stat] = Math.max(0, Math.min(100, +t.value || 0)); perersovat(); }
 });
 document.addEventListener("click", e => {
-  const t = e.target.closest("[data-bsc],[data-basp],[data-bfr],[data-bw],[data-bwel],[data-bar],[data-bmod],#bCopy,#bReset");
+  const t = e.target.closest("[data-bsc],[data-basp],[data-bfr],[data-bw],[data-bfix],[data-bwel],[data-bar],[data-bmod],#bCopy,#bReset");
   if (!t) return;
   const opis = id => { const a = abInfo(id); const o = $("#scOpis"); if (o) o.innerHTML = `<b>${esc(a.n)}</b> — ${esc(a.d)}<br><small>${ub("unlock")}: ${esc(otkr(a))}</small>`; };
   if (t.dataset.bsc) { const [s, id] = t.dataset.bsc.split("|"); BS.sc[s] = id; perersovat(); opis(id); }
@@ -257,7 +301,10 @@ document.addEventListener("click", e => {
   else if (t.dataset.bfr) { const id = t.dataset.bfr, sl2 = BS.asp.reduce((a, x) => a + (abInfo(x)?.sl || 0), 0);
     BS.frag = BS.frag.includes(id) ? BS.frag.filter(x => x !== id) : BS.frag.length < sl2 ? [...BS.frag, id] : BS.frag; perersovat(); opis(id); }
   else if (t.dataset.bw) { const [s, pole, v] = t.dataset.bw.split("|"); const w = BS.w[s];
-    if (pole === "fr") w.fr = v.slice(w.id.length + 1); else w[pole] = w[pole] === v ? undefined : v; perersovat(); }
+    const pref = {fr: "frames:", b: "barrels:", m: "magazines:", t1: "traits:", t2: "traits:", rt: "traits:", mw: "masterworks:"}[pole];
+    BFOK[s] = pref + v;
+    if (pole === "fr") w.fr = v.slice(w.id.length + 1); else w[pole] = w[pole] === v ? undefined : v; perersovat(); if (innerWidth < 860) info(BFOK[s]); }
+  else if (t.dataset.bfix) { const [s, id] = t.dataset.bfix.split("|"); BFOK[s] = id; perersovat(); if (innerWidth < 860) info(id); }
   else if (t.dataset.bwel) { const [s, el] = t.dataset.bwel.split("|"); BS.w[s].el = el; perersovat(); }
   else if (t.dataset.bar) { const [s, r] = t.dataset.bar.split("|"); BS.a[s].r = r; const inf = vesInfo(s, BS.a[s]); if ((LB.MODC?.[BS.a[s].mod] ?? 0) > inf.en) BS.a[s].mod = null; perersovat(); }
   else if (t.dataset.bmod != null) { const [s, m] = t.dataset.bmod.split("|"); BS.a[s].mod = m || null; perersovat(); }

@@ -215,3 +215,25 @@ details.podr>summary{cursor:pointer;color:var(--zol);letter-spacing:.15em;text-t
 
 /* подсветка при наведении только там, где есть мышь: на телефоне после нажатия рамка не «залипает» */
 @media (hover:hover){.kar:hover{border-color:var(--zol)}.perk:hover{border-color:var(--rama)}.mini:hover{border-color:var(--zol)}.sck:hover{opacity:1}.pk:hover{border-color:#8b8a99}.plit:hover{border-color:var(--zol);border-bottom-color:var(--c,var(--leg))}.mt:hover{border-color:var(--zol)}}
+/* билд: пушки иконками, статы/урон под пушкой, способности с откатами */
+.bw-h{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:6px}
+.bw-h .kar{flex:1 1 220px;margin:0}.bw-h .bsel{flex:1 1 200px;margin:0}
+.bblok .wkols{margin:6px 0}
+.bw-niz{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:8px;margin-top:6px}
+.bw-niz .wcard{background:#0b0c12}
+.bw-niz .stat{grid-template-columns:86px 1fr 52px;max-width:none}
+.bw-niz .stat span:last-child{min-width:0;white-space:nowrap}
+.babil{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:6px}
+.babil span{display:flex;flex-direction:column;align-items:center;width:58px;background:#0b0c12;border:1px solid var(--rama);padding:4px 2px;text-align:center}
+.babil img{width:36px;height:36px;image-rendering:pixelated}
+.babil b{font-size:11px;color:#fff;font-weight:normal}
+.babil small{font-size:8px;color:var(--tiho);text-transform:uppercase;line-height:1.1}
+.babil.mal span{width:auto;padding:2px}.babil.mal img{width:28px;height:28px}
+/* значки игры */
+.gl{width:22px;height:20px;image-rendering:pixelated;vertical-align:-5px;margin-right:4px;object-fit:contain}
+.plit small .gl,.kar small .gl{width:17px;height:15px;margin:0 2px;vertical-align:-3px}
+.sck i .gl{width:13px;height:12px;margin:0;vertical-align:-2px}
+.itog .stat.sg{grid-template-columns:30px 1fr 64px}
+.btab td .gl{width:18px;height:16px}
+.bstaty label .gl{width:16px;height:14px;vertical-align:-3px}
+.fil button .gl{width:16px;height:14px;vertical-align:-3px}

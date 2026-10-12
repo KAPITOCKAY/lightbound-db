@@ -91,7 +91,9 @@ const trKey = id => id.startsWith("frames:") ? frKey(id) : id.startsWith("skiffp
 const pName = id => tx(trKey(id), 0, P[id]?.n || id.split(":")[1]);
 const aName = k => tx("A|" + k, 0, A[k].n);
 
-const elem = e => `<span class="el-${e}">${sl(e)}</span>`;
+const gl = (n, t = "") => `<img class="gl" src="img/gl_${n}.png" alt="${esc(t)}" title="${esc(t)}">`; // значок из игры
+const statGl = s => gl("stat_" + s, sl(s));
+const elem = e => `<span class="el-${e}">${gl("element_" + e, sl(e))}${sl(e)}</span>`;
 const img = (i, big) => `<span class="ic${big ? " big" : ""}"><img src="img/${i}.png" alt="" loading="lazy"></span>`;
 
 // CSP сервера запрещает style="" в HTML, поэтому стили ставим через JS
@@ -191,9 +193,9 @@ function stranicaTip(k, r) {
   const a = A[k]; r = RAR.includes(r) ? r : "legendary";
   const c = pc[r], pref = p => x => p + x, gs = zvezdy(r === "legendary" ? godDlya(a.t1, a.t2) : []);
   const shapka = `<div class="shapka" data-st="--c:${rc[r]}">${img(a.ic, 1)}<div><h1>${esc(aName(k))}</h1><p>${u("rarInfo")(r)}</p>
-  <small class="tiho">${u("elements")}: ${a.el.map(elem).join(", ")} · ${u("ammo")}: ${sl(a.ammo)}</small></div></div>`;
+  <small class="tiho">${u("elements")}: ${a.el.map(elem).join(", ")} · ${u("ammo")}: ${gl("ammo_" + a.ammo, sl(a.ammo))}${sl(a.ammo)}</small></div></div>`;
   const filtry = `<div class="wfil"><div class="fil">${RAR.map(x => `<a class="chip${x === r ? " akt" : ""}" href="#/w/a/${k}/${x}" data-st="color:${rc[x]}">${u("rar")[x]}</a>`).join("")}</div>
-  <div class="fil" id="elFil"><button data-el="" class="akt">${u("all")}</button>${a.el.map(e => `<button data-el="${e}">${sl(e)}</button>`).join("")}</div></div>`;
+  <div class="fil" id="elFil"><button data-el="" class="akt">${u("all")}</button>${a.el.map(e => `<button data-el="${e}">${gl("element_" + e, sl(e))}${sl(e)}</button>`).join("")}</div></div>`;
   const cols = wkol("fr", u("frame"), Object.keys(a.fr).map(f => `frames:${k}_${f}`), 1) + wkol("b", u("barrel"), a.b.map(pref("barrels:")), c.barrel)
     + wkol("m", u("mag"), a.m.map(pref("magazines:")), c.magazine) + wkol("t1", u("t1"), a.t1.map(pref("traits:")), c.trait1)
     + wkol("t2", u("t2"), a.t2.map(pref("traits:")), c.trait2) + wkol("mw", u("mwork"), mw.map(pref("masterworks:")));
@@ -253,14 +255,14 @@ function armorKarta(id) {
     return `<div class="wfok"><div>${img(e.icon)}<div><b>${esc(e.name)}</b><br><small class="tiho">${sl(e.bucket)} · ${u("exotic")}</small></div></div>
       ${e.flavor ? `<p><i>${esc(tx("X|" + k, 1, e.flavor))}</i></p>` : ""}
       <div class="wfok2">${pi(id)}<b>${esc(pName(id))}</b></div><p>${esc(tx(trKey(id), 1, P[id]?.d))}</p>
-      <p class="tiho">${u("bestStats")}: ${e.stats.map(sl).join(" + ")}<br>${u("where")}: ${esc(tx("X|" + k, 2, e.how))}</p></div>`; }
+      <p class="tiho">${u("bestStats")}: ${e.stats.map(x => statGl(x) + sl(x)).join(" + ")}<br>${u("where")}: ${esc(tx("X|" + k, 2, e.how))}</p></div>`; }
   return `<div class="wfok"><div class="wfok2">${pi(id)}<b>${esc(pName(id))}</b></div><p>${esc(tx(trKey(id), 1, P[id]?.d))}</p></div>`;
 }
 function stranicaBronya() {
   const exArm = Object.entries(ex).filter(([, e]) => e.kind === "armor");
   const mods = Object.keys(P).filter(x => x.startsWith("mods:"));
   const slots = ["helmet", "gauntlets", "chest", "legs", "cloak"];
-  const plit = ([k, e]) => `<button class="plit${AFOK === "armor:" + k ? " vyb" : ""}" data-af="armor:${k}" data-st="--c:${rc.exotic}"><span class="plit-ik"><img src="img/${e.icon}.png" alt="" loading="lazy"></span><b>${esc(e.name)}</b><small>${e.stats.map(x => sl(x).slice(0, 3)).join(" + ")}</small></button>`;
+  const plit = ([k, e]) => `<button class="plit${AFOK === "armor:" + k ? " vyb" : ""}" data-af="armor:${k}" data-st="--c:${rc.exotic}"><span class="plit-ik"><img src="img/${e.icon}.png" alt="" loading="lazy"></span><b>${esc(e.name)}</b><small>${e.stats.map(statGl).join("")}</small></button>`;
   const ikon = id => `<button class="pk${AFOK === id ? " vyb" : ""}" data-af="${id}" title="${esc(pName(id))}">${pi(id)}</button>`;
   const levo = `<h2>${u("exArmor")}</h2>${slots.map(sl2 => { const v = exArm.filter(([, e]) => e.bucket === sl2); return v.length ? `<h3>${sl(sl2)}</h3><div class="plitki">${v.map(plit).join("")}</div>` : ""; }).join("")}
     <h2>${u("armorSets")}</h2><div class="sety">${Object.entries(AS).map(([id, s2]) => `<div class="setk" data-st="--c:${s2.colour}">
