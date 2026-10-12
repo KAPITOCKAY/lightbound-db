@@ -38,6 +38,9 @@ const UB = {
     rarity: "Seltenheit"},
 };
 const ub = k => UB[lang][k];
+Object.assign(UB.ru, {change: "Сменить", close: "Закрыть", remove: "Убрать"});
+Object.assign(UB.en, {change: "Change", close: "Close", remove: "Remove"});
+Object.assign(UB.de, {change: "Wechseln", close: "Schließen", remove: "Entfernen"});
 // значки строк «что дают статы»: свои глифы игры; уклон и классовая — значок выбранной способности
 const dGl = k => { const m = {moveSpeed: "stat_mobility", dr: "pf_shield", shield: "hud_shield", hp: "pf_heart", regenDelay: "pf_clock", regenRate: "stat_recovery",
   grenadeCd: "ability_grenade", meleeCd: "ability_melee", superTime: "ability_super", dodgeCd: "sub_" + BS.sc.movement, classCd: "sub_" + BS.sc.class}[k];
@@ -136,9 +139,9 @@ const r1 = x => Math.round(x * 10) / 10;
 
 // ---------- оружие ----------
 const vsePushki = slot => [
-  ...Object.keys(A).filter(k => A[k].slots.includes(slot)).map(k => ({v: "a:" + k, n: aName(k), g: "typ"})),
-  ...Object.entries(ws).flatMap(([s, set]) => Object.entries(set.items).filter(([, w]) => w.bucket === slot).map(([k, w]) => ({v: `s:${s}/${k}`, n: w.name, g: "named"}))),
-  ...Object.entries(ex).filter(([, e]) => e.kind === "weapon" && e.bucket === slot).map(([k, e]) => ({v: "e:" + k, n: e.name, g: "exo"})),
+  ...Object.keys(A).filter(k => A[k].slots.includes(slot)).map(k => ({v: "a:" + k, n: aName(k), g: "typ", ic: A[k].ic, c: rc.legendary})),
+  ...Object.entries(ws).flatMap(([s, set]) => Object.entries(set.items).filter(([, w]) => w.bucket === slot).map(([k, w]) => ({v: `s:${s}/${k}`, n: w.name, g: "named", ic: w.icon, c: set.colour, sub: aName(w.arch), el: w.element}))),
+  ...Object.entries(ex).filter(([, e]) => e.kind === "weapon" && e.bucket === slot).map(([k, e]) => ({v: "e:" + k, n: e.name, g: "exo", ic: e.icon, c: rc.exotic, sub: aName(e.arch), el: e.element})),
 ];
 function pushkaInfo(w) {
   if (!w) return null;
@@ -176,10 +179,19 @@ function uronPushki(inf, ids) {
     <tr><td>${u("rpmL")}</td><td>${ur.rpm}</td></tr><tr><td>${u("magL")}</td><td>${mp ? `${Math.round(ur.mag * (1 + mp))} <small class="zel">(${ur.mag})</small>` : ur.mag}</td></tr>
     <tr><td>${u("dpsL")}</td><td>${ur.dps}</td></tr><tr><td>${u("dpsML")}</td><td>${ur.dpsM}</td></tr></table>`;
 }
+// выбор картинками: пустой слот сразу показывает сетку, у выбранного — кнопка «Сменить»
+const OTKR = {};
+const pTile = (attr, o, akt) => `<button class="plit pm${akt ? " vyb" : ""}" ${attr} data-st="--c:${o.c}" title="${esc(o.n)}"><span class="plit-ik"><img src="img/${o.ic}.png" alt="" loading="lazy"></span><b>${esc(o.n)}</b>${o.sub || o.el ? `<small>${o.sub ? esc(o.sub) : ""}${o.el ? gl("element_" + o.el, sl(o.el)) : ""}</small>` : ""}${o.gr ? `<small>${o.gr}</small>` : ""}</button>`;
+// одна строка иконок, листается вбок; группы разделены подписью; название — при наведении и под строкой у выбранного
+const pIk = (kluch, o, akt) => `<button class="pi2${akt ? " vyb" : ""}" data-bpick="${kluch}|${o.v}" data-st="--c:${o.c}" title="${esc(o.n)}"><img src="img/${o.ic}.png" alt="${esc(o.n)}" loading="lazy">${o.gr ? `<i>${o.gr}</i>` : o.el ? `<i>${gl("element_" + o.el, sl(o.el))}</i>` : ""}</button>`;
+function vyborKartinkami(kluch, gruppy, tek) {
+  return `<div class="pstr">${gruppy.filter(([, v]) => v.length).map(([t, v]) => `<span class="pgr">${t}</span>${v.map(o => pIk(kluch, o, o.v === tek)).join("")}`).join("")}</div>`;
+}
+const smena = (kluch, est) => est ? `<button class="chip smena${OTKR[kluch] ? " akt" : ""}" data-bopen="${kluch}">${OTKR[kluch] ? "✕ " + ub("close") : "⇄ " + ub("change")}</button>${est ? `<button class="chip" data-bclear="${kluch}">${ub("remove")}</button>` : ""}` : "";
 function redaktorPushki(slot) {
   const w = BS.w[slot], inf = pushkaInfo(w), opts = vsePushki(slot);
-  const sel = `<select class="bsel" data-bws="${slot}"><option value="">${ub("pick")}</option>${["typ", "named", "exo"].map(g =>
-    `<optgroup label="${ub(g)}">${opts.filter(o => o.g === g).map(o => `<option value="${o.v}"${w && o.v === w.k + ":" + w.id ? " selected" : ""}>${esc(o.n)}</option>`).join("")}</optgroup>`).join("")}</select>`;
+  const kl = "w:" + slot, tek = w ? w.k + ":" + w.id : "";
+  const sel = (!w || OTKR[kl]) ? vyborKartinkami(kl, ["exo", "named", "typ"].map(g => [ub(g), opts.filter(o => o.g === g)]), tek) : "";
   if (!inf) return `<div class="bblok"><h3>${ub(slot)}</h3>${sel}</div>`;
   let kol = "", el = "";
   if (w.k === "a") {
@@ -201,7 +213,7 @@ function redaktorPushki(slot) {
   }
   const ids = perkiPushki(w), f = BFOK[slot] && P[BFOK[slot]];
   const opis = f ? `<div class="wfok"><div>${pi(BFOK[slot])}<b>${esc(pName(BFOK[slot]))}</b></div><p>${esc(tx(trKey(BFOK[slot]), 1, f.d))}</p></div>` : `<p class="tiho">${u("tapPerk")}</p>`;
-  return `<div class="bblok"><h3>${ub(slot)}</h3><div class="bw-h"><div class="kar" data-st="--c:${inf.c}">${img(inf.ic)}<span><b>${esc(inf.n)}</b><small>${esc(aName(inf.arch))}${w.k === "a" ? " · " + sl(w.el || A[w.id].el[0]) : inf.e ? " · " + sl(inf.e.element) : inf.it ? " · " + sl(inf.it.element) : ""}</small></span></div>${sel}</div>
+  return `<div class="bblok"><h3>${ub(slot)}</h3><div class="bw-h"><div class="kar" data-st="--c:${inf.c}">${img(inf.ic)}<span><b>${esc(inf.n)}</b><small>${esc(aName(inf.arch))}${w.k === "a" ? " · " + sl(w.el || A[w.id].el[0]) : inf.e ? " · " + sl(inf.e.element) : inf.it ? " · " + sl(inf.it.element) : ""}</small></span></div>${smena(kl, 1)}</div>${sel}
     ${el}<div class="wkols">${kol}</div>
     <div class="bw-niz"><div class="wcard">${opis}</div><div class="wcard"><h3>${u("statsL")}</h3>${statyPushki(inf.arch, ids)}</div><div class="wcard"><h3>${u("dmg")}</h3>${uronPushki(inf, ids)}</div></div></div>`;
 }
@@ -217,15 +229,16 @@ function vesInfo(slot, x) {
 const rovno = (grp, total) => Object.fromEntries(grp.map((s, i) => [s, Math.floor(total / grp.length) + (i < total % grp.length ? 1 : 0)]));
 function redaktorBroni(slot) {
   const x = BS.a[slot], inf = vesInfo(slot, x);
-  const sel = `<select class="bsel" data-bas="${slot}"><option value="">${ub("pick")}</option>
-    <optgroup label="${ub("generic")}">${LB.groups.map((g, i) => `<option value="g:${i}"${x?.k === "g" && x.id === i ? " selected" : ""}>${g.map(sl).join(" + ")}</option>`).join("")}</optgroup>
-    <optgroup label="${ub("setL")}">${Object.entries(AS).map(([id, s]) => `<option value="s:${id}"${x?.k === "s" && x.id === id ? " selected" : ""}>${esc(s.items[slot])}</option>`).join("")}</optgroup>
-    <optgroup label="${ub("exo")}">${exBronya(slot).map(([id, e]) => `<option value="e:${id}"${x?.k === "e" && x.id === id ? " selected" : ""}>${esc(e.name)}</option>`).join("")}</optgroup></select>`;
+  const kl = "a:" + slot, tek = x ? x.k + ":" + x.id : "";
+  const sel = (!x || OTKR[kl]) ? vyborKartinkami(kl, [
+    [ub("exo"), exBronya(slot).map(([id, e]) => ({v: "e:" + id, n: e.name, ic: e.icon, c: rc.exotic, gr: e.stats.map(statGl).join("")}))],
+    [ub("setL"), Object.entries(AS).map(([id, s2]) => ({v: "s:" + id, n: s2.items[slot], ic: s2.icons[slot], c: s2.colour, gr: s2.group.map(statGl).join("")}))],
+    [ub("generic"), LB.groups.map((g, i) => ({v: "g:" + i, n: ub("generic"), ic: LB.B.aic[slot], c: rc.legendary, gr: g.map(statGl).join("")}))]], tek) : "";
   if (!inf) return `<div class="bblok"><h3>${sl(slot)}</h3>${sel}</div>`;
   const sum = inf.grp.reduce((a, s) => a + (+x.st[s] || 0), 0), over = sum > inf.rng[1];
   const rar = x.k === "g" ? `<div class="fil">${["common", "uncommon", "rare", "legendary"].map(r => `<button data-bar="${slot}|${r}" class="${(x.r || "legendary") === r ? "akt" : ""}" data-st="color:${rc[r]}">${u("rar")[r]}</button>`).join("")}</div>` : "";
   const mods = Object.keys(P).filter(m => m.startsWith("mods:") && P[m].s?.includes(slot) && (LB.MODC?.[m.slice(5)] ?? 0) <= inf.en);
-  return `<div class="bblok"><h3>${sl(slot)}</h3><div class="kar" data-st="--c:${inf.c}">${img(inf.ic)}<span><b>${esc(inf.n)}</b><small>${inf.grp.map(statGl).join("")} · ${ub("energyL")(inf.en)}</small></span></div>
+  return `<div class="bblok"><h3>${sl(slot)}</h3><div class="kar" data-st="--c:${inf.c}">${img(inf.ic)}<span><b>${esc(inf.n)}</b><small>${inf.grp.map(statGl).join("")} · ${ub("energyL")(inf.en)}</small></span></div>${smena(kl, 1)}
     ${sel}${rar}${x.k === "e" ? `<div class="para">${perk("armor:" + x.id)}</div>` : ""}
     <div class="bstaty">${inf.grp.map(s => `<label>${statGl(s)}${sl(s)}<input type="number" min="0" max="${inf.rng[1]}" value="${+x.st[s] || 0}" data-bst="${slot}|${s}"></label>`).join("")}</div>
     <small class="${over ? "plokho" : "tiho"}">${ub("total")(sum, ...inf.rng)}${over ? " — " + ub("over") : ""}</small>
@@ -281,8 +294,13 @@ const snyatEkzotik = (vid, krome) => { let snyal = false;
   const kuda = vid === "w" ? BS.w : BS.a;
   for (const [s, x] of Object.entries(kuda)) if (x && x.k === "e" && s !== krome) { delete kuda[s]; snyal = true; }
   return snyal; };
-document.addEventListener("change", e => {
-  const t = e.target;
+function postavit(kl, v) {
+  const [vid, s] = kl.split(":"), el = document.createElement("select");
+  el.dataset[vid === "w" ? "bws" : "bas"] = s; el.innerHTML = `<option value="${v}">`; el.value = v;
+  OTKR[kl] = false; obrSelect(el);
+}
+document.addEventListener("change", e => obrSelect(e.target));
+function obrSelect(t) {
   if (t.dataset.bws) { const s = t.dataset.bws, v = t.value; if (!v) delete BS.w[s]; else { const [k, id] = [v[0], v.slice(2)];
       const msg = k === "e" && snyatEkzotik("w", s);
       BS.w[s] = k === "a" ? {k, id, fr: Object.keys(A[id].fr)[0], el: A[id].el[0]} : {k, id}; perersovat(); if (msg) $("#bMsg").textContent = ub("oneEx"); return; } perersovat(); }
@@ -290,11 +308,14 @@ document.addEventListener("change", e => {
       const msg = k === "e" && snyatEkzotik("a", s), inf = vesInfo(s, {k, id});
       BS.a[s] = {k, id, st: rovno(inf.grp, inf.rng[1]), mod: null}; perersovat(); if (msg) $("#bMsg").textContent = ub("oneEx"); return; } perersovat(); }
   else if (t.dataset.bst) { const [s, stat] = t.dataset.bst.split("|"); BS.a[s].st[stat] = Math.max(0, Math.min(100, +t.value || 0)); perersovat(); }
-});
+}
 document.addEventListener("click", e => {
-  const t = e.target.closest("[data-bsc],[data-basp],[data-bfr],[data-bw],[data-bfix],[data-bwel],[data-bar],[data-bmod],#bCopy,#bReset");
+  const t = e.target.closest("[data-bpick],[data-bopen],[data-bclear],[data-bsc],[data-basp],[data-bfr],[data-bw],[data-bfix],[data-bwel],[data-bar],[data-bmod],#bCopy,#bReset");
   if (!t) return;
   const opis = id => { const a = abInfo(id); const o = $("#scOpis"); if (o) o.innerHTML = `<b>${esc(a.n)}</b> — ${esc(a.d)}<br><small>${ub("unlock")}: ${esc(otkr(a))}</small>`; };
+  if (t.dataset.bpick) { const i = t.dataset.bpick.indexOf("|", 2); postavit(t.dataset.bpick.slice(0, i), t.dataset.bpick.slice(i + 1)); return; }
+  if (t.dataset.bopen) { OTKR[t.dataset.bopen] = !OTKR[t.dataset.bopen]; perersovat(); return; }
+  if (t.dataset.bclear) { const [vid, s2] = t.dataset.bclear.split(":"); delete (vid === "w" ? BS.w : BS.a)[s2]; OTKR[t.dataset.bclear] = false; perersovat(); return; }
   if (t.dataset.bsc) { const [s, id] = t.dataset.bsc.split("|"); BS.sc[s] = id; perersovat(); opis(id); }
   else if (t.dataset.basp) { const id = t.dataset.basp; BS.asp = BS.asp.includes(id) ? BS.asp.filter(x => x !== id) : [...BS.asp, id].slice(-2);
     const sl2 = BS.asp.reduce((a, x) => a + (abInfo(x)?.sl || 0), 0); BS.frag = BS.frag.slice(0, sl2); perersovat(); opis(id); }
