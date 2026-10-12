@@ -343,7 +343,7 @@ function predmet(sec, it) {
     it.max ? `<small>${u("maxStack")}: ${it.max}</small>` : "",
   ].join("");
   const perki = it.perks ? `<div class="para">${it.perks.map(x => perk("skiffperk:" + x)).join("")}</div>` : "";
-  return `<div class="pr" data-st="--c:${rc[it.r] || "var(--rama)"}${it.bg ? ";--bg:" + it.bg : ""}"><div class="pr-k${it.bg ? " em" : ""}">${kart}</div>
+  return `${it.np ? `<img class="np" src="img/${it.np}" alt="">` : ""}<div class="pr" data-st="--c:${rc[it.r] || "var(--rama)"}${it.bg ? ";--bg:" + it.bg : ""}"><div class="pr-k${it.bg ? " em" : ""}">${kart}</div>
     <div><b>${esc(n)}</b>${ex2}<p>${esc(d)}</p>${src ? `<small class="tiho">${u("where")}: ${esc(src)}</small>` : ""}${perki}</div></div>`;
 }
 let KFOK = null;

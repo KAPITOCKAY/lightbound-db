@@ -272,3 +272,4 @@ details.podr>summary{cursor:pointer;color:var(--zol);letter-spacing:.15em;text-t
 .sovb{background:#0d1a1c;border:1px solid #23474a;border-left:3px solid #5fd6d9;padding:8px 10px;font-size:12px;color:#c9d6d6;margin:6px 0}
 .sovb b{color:#5fd6d9}
 .sovb .chip{margin-left:6px}
+.np{display:block;width:100%;max-width:384px;aspect-ratio:192/36;image-rendering:pixelated;margin:0 0 10px;border:1px solid #080c18}
