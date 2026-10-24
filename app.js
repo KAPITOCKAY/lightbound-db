@@ -66,9 +66,15 @@ const U = {
     armorGod: s => `God Roll (unser Tipp): maximal <b>${s}</b> — das Set rollt in diese Werte.`, mods: "Rüstungsmods",
     groups: "Normale Rüstungswerte rollen in Gruppen", close: "Schließen"},
 };
-Object.assign(U.ru, {sovT: "Совет сайта", sovD: (a, b) => `не правило игры. Фрейм — с наибольшим уроном в секунду с перезарядкой. Ствол, магазин и мастерворк — с наибольшей прибавкой к главным статам этого типа: ${a} и ${b}.`, sovBtn: "Собрать совет", tapItem: "Нажмите на предмет, чтобы прочитать описание.", exoticsH: "Экзотики", tapPerk: "Нажмите на перк: тут появится описание, а сам перк попадёт в ваш ролл. Статы справа пересчитаются.", yourRoll: "Ваш ролл", rollHint: "Выберите по перку в колонках — соберётся ролл.", isGod: "Это гудролл", reset: "Сбросить", starHint2: "★ — гудролл игры, ◆ — совет сайта. Наведите на иконку, чтобы увидеть название.", useGod: "Собрать этот ролл", more: "Подробнее", statsL: "Статы"});
-Object.assign(U.en, {sovT: "Site tip", sovD: (a, b) => `not a game rule. Frame: highest sustained DPS. Barrel, magazine and masterwork: the biggest boost to this type's key stats, ${a} and ${b}.`, sovBtn: "Build the tip", tapItem: "Tap an item to read about it.", exoticsH: "Exotics", tapPerk: "Tap a perk: its description shows here and it goes into your roll. The stats update.", yourRoll: "Your roll", rollHint: "Pick one perk per column to build a roll.", isGod: "This is a god roll", reset: "Reset", starHint2: "★ — the game's god roll, ◆ — site tip. Hover an icon to see its name.", useGod: "Build this roll", more: "More", statsL: "Stats"});
-Object.assign(U.de, {sovT: "Tipp der Seite", sovD: (a, b) => `keine Spielregel. Rahmen: höchster Dauer-DPS. Lauf, Magazin und Meisterwerk: größter Bonus auf die Hauptwerte dieses Typs, ${a} und ${b}.`, sovBtn: "Tipp bauen", tapItem: "Tippe auf einen Gegenstand für die Beschreibung.", exoticsH: "Exotics", tapPerk: "Tippe auf einen Perk: hier erscheint die Beschreibung, und er kommt in deinen Roll. Die Werte aktualisieren sich.", yourRoll: "Dein Roll", rollHint: "Wähle je einen Perk pro Spalte für deinen Roll.", isGod: "Das ist ein God Roll", reset: "Zurücksetzen", starHint2: "★ — God Roll des Spiels, ◆ — Tipp der Seite. Fahre über ein Icon für den Namen.", useGod: "Diesen Roll bauen", more: "Mehr", statsL: "Werte"});
+Object.assign(U.ru, {sovT: "Совет сайта", sovD: (a, b) => `не правило игры. Фрейм — с наибольшим уроном в секунду с перезарядкой. Ствол, магазин и мастерворк — с наибольшей прибавкой к главным статам этого типа: ${a} и ${b}.`, sovBtn: "Собрать совет", tapItem: "Нажмите на предмет, чтобы прочитать описание.", exoticsH: "Экзотики", tapPerk: "Нажмите на перк: тут появится описание, а сам перк попадёт в ваш ролл. Статы справа пересчитаются.", yourRoll: "Ваш ролл", rollHint: "Выберите по перку в колонках — соберётся ролл.", isGod: "Это гудролл", reset: "Сбросить", starHint2: "★ — гудролл игры, ◆ — совет сайта. Наведите на иконку, чтобы увидеть название.", useGod: "Собрать этот ролл", more: "Подробнее", statsL: "Статы",
+  fav: "Избранное", addFav: "Добавить в избранное", delFav: "Убрать из избранного", favEmpty: "Пока пусто. Нажмите ☆ у оружия или брони.", favWeapons: "Избранное оружие", favArmor: "Избранная броня",
+  compare: "Сравнить", compareWith: "Сравнить с…", chooseSecond: "Выберите второе оружие", compareBase: "Базовые статы", comparePerks: "Перки", compareSource: "Источник получения", compareBack: "Вернуться к оружию", better: "лучше", sortBy: "Сортировка"});
+Object.assign(U.en, {sovT: "Site tip", sovD: (a, b) => `not a game rule. Frame: highest sustained DPS. Barrel, magazine and masterwork: the biggest boost to this type's key stats, ${a} and ${b}.`, sovBtn: "Build the tip", tapItem: "Tap an item to read about it.", exoticsH: "Exotics", tapPerk: "Tap a perk: its description shows here and it goes into your roll. The stats update.", yourRoll: "Your roll", rollHint: "Pick one perk per column to build a roll.", isGod: "This is a god roll", reset: "Reset", starHint2: "★ — the game's god roll, ◆ — site tip. Hover an icon to see its name.", useGod: "Build this roll", more: "More", statsL: "Stats",
+  fav: "Favorites", addFav: "Add to favorites", delFav: "Remove from favorites", favEmpty: "Nothing here yet. Tap ☆ on a weapon or armor piece.", favWeapons: "Favorite weapons", favArmor: "Favorite armor",
+  compare: "Compare", compareWith: "Compare with…", chooseSecond: "Choose a second weapon", compareBase: "Base stats", comparePerks: "Perks", compareSource: "Drop source", compareBack: "Back to weapon", better: "better", sortBy: "Sort by"});
+Object.assign(U.de, {sovT: "Tipp der Seite", sovD: (a, b) => `keine Spielregel. Rahmen: höchster Dauer-DPS. Lauf, Magazin und Meisterwerk: größter Bonus auf die Hauptwerte dieses Typs, ${a} und ${b}.`, sovBtn: "Tipp bauen", tapItem: "Tippe auf einen Gegenstand für die Beschreibung.", exoticsH: "Exotics", tapPerk: "Tippe auf einen Perk: hier erscheint die Beschreibung, und er kommt in deinen Roll. Die Werte aktualisieren sich.", yourRoll: "Dein Roll", rollHint: "Wähle je einen Perk pro Spalte für deinen Roll.", isGod: "Das ist ein God Roll", reset: "Zurücksetzen", starHint2: "★ — God Roll des Spiels, ◆ — Tipp der Seite. Fahre über ein Icon für den Namen.", useGod: "Diesen Roll bauen", more: "Mehr", statsL: "Werte",
+  fav: "Favoriten", addFav: "Zu Favoriten hinzufügen", delFav: "Aus Favoriten entfernen", favEmpty: "Noch nichts hier. Tippe bei einer Waffe oder Rüstung auf ☆.", favWeapons: "Lieblingswaffen", favArmor: "Lieblingsrüstung",
+  compare: "Vergleichen", compareWith: "Vergleichen mit…", chooseSecond: "Zweite Waffe wählen", compareBase: "Grundwerte", comparePerks: "Perks", compareSource: "Drop-Quelle", compareBack: "Zurück zur Waffe", better: "besser", sortBy: "Sortierung"});
 const SLOV = { // короткие игровые слова
   ru: {kinetic: "Кинетика", arc: "Молния", ember: "Огонь", void: "Пустота", helmet: "Шлем", gauntlets: "Перчатки", chest: "Нагрудник", legs: "Ботинки", cloak: "Плащ",
     primary: "основные", special: "особые", heavy: "тяжёлые", range: "Дальность", stability: "Стабильность", handling: "Удобство", reload: "Перезарядка", magnetism: "Магнетизм",
@@ -127,10 +133,25 @@ const ORUZHIE = [
     ({url: `w/e/${k}`, n: () => e.name, en: e.name, sub: () => `${aName(e.arch)} · ${u("exotic")}`, ic: e.icon, arch: e.arch, el: e.element, c: rc.exotic, r: "exotic"})),
 ];
 const kartochka = o => `<a class="kar" href="#/${o.url}" data-st="--c:${o.c}">${img(o.ic)}<span><b>${esc(o.n())}</b><small>${esc(o.sub())}${o.el ? " · " + elem(o.el) : ""}</small></span></a>`;
+let FAV;
+try { FAV = new Set(JSON.parse(localStorage.getItem("lb:favorites:v1") || "[]").filter(x => typeof x === "string")); } catch { FAV = new Set(); }
+const favKn = (key, name) => { const on = FAV.has(key), label = `${u(on ? "delFav" : "addFav")}: ${name}`;
+  return `<button class="favkn${on ? " on" : ""}" data-fav="${esc(key)}" aria-label="${esc(label)}" aria-pressed="${on}" title="${esc(label)}">${on ? "★" : "☆"}</button>`; };
+const favKeyW = url => "w:" + url, favKeyA = id => "a:" + id;
+function weaponInfo(url) {
+  const o = ORUZHIE.find(x => x.url === url); if (!o) return null;
+  const p = url.split("/");
+  if (o.url.startsWith("w/a/")) { const a = A[o.arch], fr = Object.keys(a.fr)[0];
+    return {...o, frame: fr, source: o.sub(), perks: [`frames:${o.arch}_${fr}`, ...a.b.map(x => "barrels:" + x), ...a.m.map(x => "magazines:" + x), ...a.t1.map(x => "traits:" + x), ...a.t2.map(x => "traits:" + x)]}; }
+  if (o.url.startsWith("w/s/")) { const set = ws[p[2]], w = set.items[p[3]];
+    return {...o, frame: w.frame, source: tx("WS|" + p[2], 0, set.source), perks: [`frames:${w.arch}_${w.frame}`, "barrels:" + w.barrel, "magazines:" + w.magazine, ...w.traits[0].map(x => "traits:" + x), ...w.traits[1].map(x => "traits:" + x), "set_perks:" + set.perk]}; }
+  const e = ex[p[2]], ik = P["intrinsics:" + p[2]] ? p[2] : p[2].replace(/^the_/, "");
+  return {...o, frame: e.frame, source: tx("X|" + p[2], 2, e.how), perks: [`frames:${e.arch}_${e.frame}`, "intrinsics:" + ik, e.barrel && "barrels:" + e.barrel, e.magazine && "magazines:" + e.magazine, ...(EXR[p[2]] || []).map(x => "traits:" + x), "masterworks:" + e.masterwork].filter(Boolean)};
+}
 
 let filtr = "", poisk = "", rar = "";
-const plitka = o => `<a class="plit" href="#/${o.url}" data-st="--c:${o.c}"><span class="plit-ik"><img src="img/${o.ic}.png" alt="" loading="lazy"></span>
-  <b>${esc(o.n())}</b><small>${esc(o.url.startsWith("w/a/") ? u("rar")[o.r] : aName(o.arch))}${o.el ? " · " + elem(o.el) : ""}</small></a>`;
+const plitka = o => `<div class="plit-wrap"><a class="plit" href="#/${o.url}" data-st="--c:${o.c}"><span class="plit-ik"><img src="img/${o.ic}.png" alt="" loading="lazy"></span>
+  <b>${esc(o.n())}</b><small>${esc(o.url.startsWith("w/a/") ? u("rar")[o.r] : aName(o.arch))}${o.el ? " · " + elem(o.el) : ""}</small></a>${favKn(favKeyW(o.url), o.n())}</div>`;
 function stranicaOruzhie() {
   // без фильтра редкости тип оружия показываем один раз (легендаркой), иначе — плитки нужной редкости
   const vid = ORUZHIE.filter(o => (rar ? o.r === rar : !(o.url.startsWith("w/a/") && o.r !== "legendary"))
@@ -138,9 +159,9 @@ function stranicaOruzhie() {
   const razd = [["exotic", o => o.r === "exotic"], ["named", o => o.url.startsWith("w/s/")], ["types", o => o.url.startsWith("w/a/")]]
     .map(([k, f]) => [k, vid.filter(f)]).filter(([, v]) => v.length);
   return `<h2>${u("weapons")}</h2>
-  <div class="panel"><input class="poisk" id="poisk" placeholder="${u("search")}" value="${esc(poisk)}">
-  <select id="selRar"><option value="">${u("rarity")}: ${u("all")}</option>${[...RAR, "exotic"].map(r => `<option value="${r}"${rar === r ? " selected" : ""}>${u("rar")[r]}</option>`).join("")}</select>
-  <select id="selTip"><option value="">${u("weapon")}: ${u("all")}</option>${Object.keys(A).map(k => `<option value="${k}"${filtr === k ? " selected" : ""}>${esc(aName(k))}</option>`).join("")}</select></div>
+  <div class="panel"><input class="poisk" id="poisk" aria-label="${u("search")}" placeholder="${u("search")}" value="${esc(poisk)}">
+  <select id="selRar" aria-label="${u("rarity")}"><option value="">${u("rarity")}: ${u("all")}</option>${[...RAR, "exotic"].map(r => `<option value="${r}"${rar === r ? " selected" : ""}>${u("rar")[r]}</option>`).join("")}</select>
+  <select id="selTip" aria-label="${u("weapon")}"><option value="">${u("weapon")}: ${u("all")}</option>${Object.keys(A).map(k => `<option value="${k}"${filtr === k ? " selected" : ""}>${esc(aName(k))}</option>`).join("")}</select></div>
   ${razd.map(([k, v]) => `<h3>${k === "exotic" ? u("exoticsH") : u(k)} <span class="tiho">${v.length}</span></h3><div class="plitki">${v.map(plitka).join("")}</div>`).join("") || `<p class="tiho">${u("nothing")}</p>`}`;
 }
 
@@ -197,8 +218,11 @@ function bokovaya(arch, frame) {
       <tr><td>${u("magL")}</td><td>${mp ? `${Math.round(ur.mag * (1 + mp))} <small class="zel">(${ur.mag})</small>` : ur.mag}</td></tr>
       <tr><td>${u("dpsL")}</td><td>${ur.dps}</td></tr><tr><td>${u("dpsML")}</td><td>${ur.dpsM}</td></tr></table></div>` : ""}</aside>`;
 }
-const wStranica = (shapka, filtry, cols, arch, frame, niz) => `${shapka}${filtry}<div class="wgrid"><div class="wmain"><div class="wkols">${cols}</div>
+const wStranica = (shapka, filtry, cols, arch, frame, niz) => {
+  const url = location.hash.replace(/^#\//, ""), o = ORUZHIE.find(x => x.url === url);
+  return `${shapka}<div class="wactions">${o ? favKn(favKeyW(url), o.n()) : ""}<a class="chip" href="#/compare/${encodeURIComponent(url)}">⇄ ${u("compare")}</a></div>${filtry}<div class="wgrid"><div class="wmain"><div class="wkols">${cols}</div>
   <p class="tiho">${u("starHint2")}</p></div>${bokovaya(arch, frame)}</div>${niz}`;
+};
 const godKarty = gs => gs.length ? `<div class="gods">${gs.map(g => `<div class="godk"><b>★ ${esc(gName(g))}</b>
   <div class="godp">${["a", "b"].map(x => `<button data-p="traits:${g[x]}">${pi("traits:" + g[x])}<span>${esc(pName("traits:" + g[x]))}</span></button>`).join("")}</div>
   <p>${esc(gWhy(g))}</p><button class="chip" data-god="${g.a},${g.b}">${u("useGod")}</button></div>`).join("")}</div>` : `<p class="tiho">${u("noGod")}</p>`;
@@ -258,12 +282,37 @@ function stranicaGod() {
     imen: ORUZHIE.filter(o => o.t && o.t[0].includes(g.a) && o.t[1].includes(g.b))}))
     .filter(x => !godTip || x.tipy.includes(godTip) || x.imen.some(o => o.arch === godTip));
   return `<h2>${u("godrolls")}</h2><p class="tiho">${u("godIntro")}</p>
-  <div class="panel"><select id="selGod"><option value="">${u("weapon")}: ${u("all")}</option>${Object.keys(A).map(k => `<option value="${k}"${godTip === k ? " selected" : ""}>${esc(aName(k))}</option>`).join("")}</select>
+  <div class="panel"><select id="selGod" aria-label="${u("weapon")}"><option value="">${u("weapon")}: ${u("all")}</option>${Object.keys(A).map(k => `<option value="${k}"${godTip === k ? " selected" : ""}>${esc(aName(k))}</option>`).join("")}</select>
   <span class="tiho">${vse.length} / ${god.length}</span></div>
   <div class="gods2">${vse.map(({g, tipy, imen}) => `<div class="godk"><b>★ ${esc(gName(g))}</b>
     <div class="godp">${["a", "b"].map(x => `<button data-p="traits:${g[x]}">${pi("traits:" + g[x])}<span>${esc(pName("traits:" + g[x]))}</span></button>`).join("")}</div>
     <p>${esc(gWhy(g))}</p>
     <div class="mts">${tipy.map(k => mt(`w/a/${k}`, A[k].ic, aName(k))).join("")}${imen.map(o => mt(o.url, o.ic, o.n(), 1)).join("")}</div></div>`).join("") || `<p class="tiho">${u("nothing")}</p>`}</div>`;
+}
+
+function stranicaSravnenie(aUrl, bUrl) {
+  const a = weaponInfo(aUrl), b = weaponInfo(bUrl); if (!a) return stranicaOruzhie();
+  const opts = ORUZHIE.filter(o => o.url !== aUrl && (!o.url.startsWith("w/a/") || o.r === "legendary"));
+  const option = o => `<option value="${o.url}"${bUrl === o.url ? " selected" : ""}>${esc(o.n())} — ${esc(o.sub())}</option>`;
+  const groups = [["exoticsH", o => o.r === "exotic"], ["named", o => o.url.startsWith("w/s/")], ["types", o => o.url.startsWith("w/a/")]];
+  const picker = `<div class="panel cmp-pick"><label for="selCompare">${u("chooseSecond")}</label><select id="selCompare" data-first="${esc(aUrl)}"><option value="">—</option>${groups.map(([k, f]) => `<optgroup label="${u(k)}">${opts.filter(f).map(option).join("")}</optgroup>`).join("")}</select></div>`;
+  if (!b) return `<h2>${u("compare")}</h2><a class="chip" href="#/${aUrl}">← ${u("compareBack")}</a><div class="cmp-head"><div></div>${kartochka(a)}</div>${picker}`;
+  const cell = (v, other, text = v) => `<div class="${v > other ? "cmp-best" : ""}"${v > other ? ` title="${u("better")}"` : ""}>${text}</div>`;
+  const row = (label, va, vb, ta = va, tb = vb) => `<div class="cmp-label">${label}</div>${cell(va, vb, ta)}${cell(vb, va, tb)}`;
+  const stats = Object.entries(A[a.arch].base).map(([k, v]) => row(sl(k), v, A[b.arch].base[k] ?? 0)).join("");
+  const ua = URON[`${a.arch}_${a.frame}`], ub2 = URON[`${b.arch}_${b.frame}`];
+  const dmg = ua && ub2 ? `<h3>${u("dmg")}</h3><div class="cmp-grid">${KOL.map(([k, l]) => row(u(l), k === "k" ? (ua.k > 1 ? Math.round(ua.v * ua.k) : 0) : ua[k], k === "k" ? (ub2.k > 1 ? Math.round(ub2.v * ub2.k) : 0) : ub2[k], k === "k" ? yach(ua, "k") : yach(ua, k), k === "k" ? yach(ub2, "k") : yach(ub2, k))).join("")}</div>` : "";
+  const perks = w => `<div class="cmp-perks">${w.perks.map(id => `<button class="perk" data-p="${id}">${pi(id)}<span>${esc(pName(id))}</span></button>`).join("")}</div>`;
+  return `<h2>${u("compare")}</h2>${picker}<div class="cmp-head"><div></div>${kartochka(a)}${kartochka(b)}</div>
+    <h3>${u("compareBase")}</h3><div class="cmp-grid">${stats}</div>${dmg}
+    <h3>${u("comparePerks")}</h3><div class="cmp-grid"><div></div><div>${perks(a)}</div><div>${perks(b)}</div></div>
+    <h3>${u("compareSource")}</h3><div class="cmp-grid"><div></div><p>${esc(a.source)}</p><p>${esc(b.source)}</p></div>`;
+}
+function stranicaFav() {
+  const weapons = ORUZHIE.filter(o => FAV.has(favKeyW(o.url))), armor = Object.entries(ex).filter(([k, e]) => e.kind === "armor" && FAV.has(favKeyA(k))), sets = Object.entries(AS).filter(([k]) => FAV.has(favKeyA("set:" + k)));
+  const armorCard = ([k, e]) => `<div class="kar-wrap"><a class="kar" href="#/armor" data-afopen="armor:${k}" data-st="--c:${rc.exotic}">${img(e.icon)}<span><b>${esc(e.name)}</b><small>${sl(e.bucket)} · ${u("exotic")}</small></span></a>${favKn(favKeyA(k), e.name)}</div>`;
+  const setCard = ([k, s]) => `<div class="kar-wrap"><a class="kar" href="#/armor" data-st="--c:${s.colour}">${img(s.icons.chest)}<span><b>${esc(s.name)}</b><small>${u("armorSets")}</small></span></a>${favKn(favKeyA("set:" + k), s.name)}</div>`;
+  return `<h2>${u("fav")}</h2>${weapons.length + armor.length + sets.length ? `<h3>${u("favWeapons")}</h3><div class="plitki">${weapons.map(plitka).join("")}</div><h3>${u("favArmor")}</h3><div class="g">${armor.map(armorCard).join("")}${sets.map(setCard).join("")}</div>` : `<p class="tiho">${u("favEmpty")}</p>`}`;
 }
 
 let AFOK = null;
@@ -279,11 +328,11 @@ function stranicaBronya() {
   const exArm = Object.entries(ex).filter(([, e]) => e.kind === "armor");
   const mods = Object.keys(P).filter(x => x.startsWith("mods:"));
   const slots = ["helmet", "gauntlets", "chest", "legs", "cloak"];
-  const plit = ([k, e]) => `<button class="plit${AFOK === "armor:" + k ? " vyb" : ""}" data-af="armor:${k}" data-st="--c:${rc.exotic}"><span class="plit-ik"><img src="img/${e.icon}.png" alt="" loading="lazy"></span><b>${esc(e.name)}</b><small>${e.stats.map(statGl).join("")}</small></button>`;
-  const ikon = id => `<button class="pk${AFOK === id ? " vyb" : ""}" data-af="${id}" title="${esc(pName(id))}">${pi(id)}</button>`;
+  const plit = ([k, e]) => `<div class="plit-wrap"><button class="plit${AFOK === "armor:" + k ? " vyb" : ""}" data-af="armor:${k}" data-st="--c:${rc.exotic}"><span class="plit-ik"><img src="img/${e.icon}.png" alt="" loading="lazy"></span><b>${esc(e.name)}</b><small>${e.stats.map(statGl).join("")}</small></button>${favKn(favKeyA(k), e.name)}</div>`;
+  const ikon = id => `<button class="pk${AFOK === id ? " vyb" : ""}" data-af="${id}" title="${esc(pName(id))}" aria-label="${esc(pName(id))}">${pi(id)}</button>`;
   const levo = `<h2>${u("exArmor")}</h2>${slots.map(sl2 => { const v = exArm.filter(([, e]) => e.bucket === sl2); return v.length ? `<h3>${sl(sl2)}</h3><div class="plitki">${v.map(plit).join("")}</div>` : ""; }).join("")}
     <h2>${u("armorSets")}</h2><div class="sety">${Object.entries(AS).map(([id, s2]) => `<div class="setk" data-st="--c:${s2.colour}">
-      <div class="setk-h"><b>${esc(s2.name)}</b><small class="tiho">${u("where")}: ${esc(tx("AS|" + id, 0, s2.source))}</small></div>
+      <div class="setk-h"><b>${esc(s2.name)}</b><small class="tiho">${u("where")}: ${esc(tx("AS|" + id, 0, s2.source))}</small>${favKn(favKeyA("set:" + id), s2.name)}</div>
       <div class="setk-i">${slots.map(sl2 => `<span title="${esc(s2.items[sl2])}"><img src="img/${s2.icons[sl2]}.png" alt="" loading="lazy"><small>${sl(sl2)}</small></span>`).join("")}</div>
       <p class="tiho">${u("armorGod")(s2.group.map(sl).join(" + "))}</p>
       <div class="setk-b">${s2.bonuses.map(b => `<button class="${AFOK === "set_bonuses:" + b ? "vyb" : ""}" data-af="set_bonuses:${b}">${pi("set_bonuses:" + b)}<span>${esc(pName("set_bonuses:" + b))}</span></button>`).join("")}</div></div>`).join("")}</div>
@@ -314,15 +363,15 @@ const yach = (r, c) => c === "k" ? (r.k > 1 ? Math.round(r.v * r.k) : "—") : c
 function tablica(rows, mark) {
   const BAR = ["dps", "dpsK", "dpsM"], mx = Object.fromEntries(BAR.map(c => [c, Math.max(1, ...rows.map(r => +r[c] || 0))]));
   const yach2 = (r, c) => BAR.includes(c) ? `<span class="tv">${yach(r, c)}<i data-st="width:${Math.round((+r[c] || 0) / mx[c] * 100)}%"></i></span>` : yach(r, c);
-  return `<div class="tbl"><table><thead><tr><th>${u("weapon")}</th><th>${u("frameL")}</th>${KOL.map(([c, l]) => `<th data-sort="${c}" class="${sortK === c ? "akt" : ""}">${u(l)}${sortK === c ? " ▼" : ""}</th>`).join("")}</tr></thead><tbody>
+  return `<div class="tbl"><table><thead><tr><th>${u("weapon")}</th><th>${u("frameL")}</th>${KOL.map(([c, l]) => `<th class="${sortK === c ? "akt" : ""}"${sortK === c ? ' aria-sort="descending"' : ""}><button data-sort="${c}" aria-label="${u("sortBy")}: ${u(l)}">${u(l)}${sortK === c ? " ▼" : ""}</button></th>`).join("")}</tr></thead><tbody>
   ${rows.map(r => `<tr class="${r.ex ? "ex" : ""}${mark && r.key === mark ? " my" : ""}"><td><a class="tk" href="#/${r.url}"><img src="img/${r.exk ? ex[r.exk].icon : A[r.ak].ic}.png" alt="" loading="lazy">${esc(r.n)}</a></td><td><span class="tk">${pi(`frames:${r.ak}_${r.fk}`)}${esc(frName(r.ak, r.fk))}</span></td>${KOL.map(([c]) => `<td class="${sortK === c ? "skol" : ""}">${yach2(r, c)}</td>`).join("")}</tr>`).join("")}</tbody></table></div>`;
 }
 let sortK = "dpsM", dmgTip = "";
 function stranicaUron() {
   const rows = STROKI().filter(r => !dmgTip || r.ak === dmgTip).sort((a, b) => (+b[sortK] || 0) - (+a[sortK] || 0));
   return `<h2>${u("dmg")}</h2>
-  <div class="panel"><select id="selDt"><option value="">${u("weapon")}: ${u("all")}</option>${Object.keys(A).map(k => `<option value="${k}"${dmgTip === k ? " selected" : ""}>${esc(aName(k))}</option>`).join("")}</select>
-  <select id="selSort">${KOL.map(([c, l]) => `<option value="${c}"${sortK === c ? " selected" : ""}>▼ ${u(l)}</option>`).join("")}</select></div>
+  <div class="panel"><select id="selDt" aria-label="${u("weapon")}"><option value="">${u("weapon")}: ${u("all")}</option>${Object.keys(A).map(k => `<option value="${k}"${dmgTip === k ? " selected" : ""}>${esc(aName(k))}</option>`).join("")}</select>
+  <select id="selSort" aria-label="${u("sortBy")}">${KOL.map(([c, l]) => `<option value="${c}"${sortK === c ? " selected" : ""}>▼ ${u(l)}</option>`).join("")}</select></div>
   ${tablica(rows)}${podrobnee(`<p class="tiho">${u("dmgIntro")}</p>`)}`;
 }
 const uronBlok = (ak, fk, exk) => { const my = exk ? "ex:" + exk : fk ? `${ak}_${fk}` : "";
@@ -366,11 +415,13 @@ function pokaz() {
   const [r, ...p] = location.hash.replace(/^#\/?/, "").split("/");
   if (location.hash !== ROLL_URL) { ROLL = {}; FOKUS = null; ROLL_URL = location.hash; }
   ZV = GOD_PERKS; SOV = new Set();
+  const cmp = p.map(x => { try { return decodeURIComponent(x); } catch { return ""; } });
   const v = r === "w" ? (p[0] === "a" && A[p[1]] ? stranicaTip(p[1], p[2]) : p[0] === "s" && ws[p[1]]?.items[p[2]] ? stranicaSet(p[1], p[2])
     : p[0] === "e" && ex[p[1]] ? stranicaEkzotik(p[1]) : stranicaOruzhie())
+    : r === "compare" ? stranicaSravnenie(cmp[0], cmp[1]) : r === "fav" ? stranicaFav()
     : r === "build" ? stranicaBild(p[0]) : r === "god" ? stranicaGod() : r === "armor" ? stranicaBronya() : r === "col" ? stranicaKol(p[0]) : r === "dmg" ? stranicaUron() : stranicaOruzhie();
   $("#app").innerHTML = v; stili($("#app"));
-  document.querySelectorAll("nav a").forEach(a => { a.classList.toggle("akt", a.dataset.r === (r === "w" ? "" : r || "")); a.textContent = u(a.dataset.t) || ub(a.dataset.t); });
+  document.querySelectorAll("nav a").forEach(a => { a.classList.toggle("akt", a.dataset.r === (r === "w" || r === "compare" ? "" : r || "")); a.textContent = u(a.dataset.t) || ub(a.dataset.t); });
   document.querySelectorAll("#yazyk button").forEach(b => b.classList.toggle("akt", b.dataset.lang === lang));
   document.documentElement.lang = lang;
   $("#podval").innerHTML = FOOT[lang];
@@ -381,12 +432,15 @@ function info(id) {
   const x = P[id]; if (!x) return;
   const orig = lang !== "en" && pName(id) !== x.n ? ` <small class="tiho">(${esc(x.n)})</small>` : "";
   $("#info").innerHTML = `<button class="x" aria-label="${u("close")}">✕</button><div data-st="display:flex;gap:8px;align-items:center">${pi(id)}<b>${esc(pName(id))}</b>${orig}${x.e ? " · " + elem(x.e) : ""}</div><p>${esc(tx(trKey(id), 1, x.d))}</p>`;
-  stili($("#info")); $("#info").hidden = false;
+  stili($("#info")); $("#info").hidden = false; $("#info").setAttribute("aria-label", pName(id));
 }
 
 document.addEventListener("click", e => {
-  const t = e.target.closest("[data-sovroll],[data-kf],[data-af],[data-pk],[data-rollreset],[data-p],[data-f],[data-rar],[data-dt],[data-sort],[data-el],[data-god],[data-lang],#info .x");
+  const t = e.target.closest("[data-fav],[data-afopen],[data-sovroll],[data-kf],[data-af],[data-pk],[data-rollreset],[data-p],[data-f],[data-rar],[data-dt],[data-sort],[data-el],[data-god],[data-lang],#info .x");
   if (!t) return;
+  if (t.dataset.fav) { FAV.has(t.dataset.fav) ? FAV.delete(t.dataset.fav) : FAV.add(t.dataset.fav);
+    try { localStorage.setItem("lb:favorites:v1", JSON.stringify([...FAV])); } catch {} const y = scrollY; pokaz(); scrollTo(0, y); return; }
+  if (t.dataset.afopen) { AFOK = t.dataset.afopen; return; }
   if (t.dataset.pk) { const [col, id] = t.dataset.pk.split("|"); const fix = t.classList.contains("fix");
     ROLL[col] = ROLL[col] === id && !fix ? undefined : id; FOKUS = id; const y = scrollY; pokaz(); scrollTo(0, y); if (innerWidth < 860) info(id); return; }
   if (t.dataset.kf) { KFOK = t.dataset.kf; const y = scrollY; pokaz(); scrollTo(0, y);
@@ -415,7 +469,9 @@ document.addEventListener("change", e => {
   else if (e.target.id === "selGod") { godTip = e.target.value; pokaz(); }
   else if (e.target.id === "selDt") { dmgTip = e.target.value; pokaz(); }
   else if (e.target.id === "selSort") { sortK = e.target.value; pokaz(); }
+  else if (e.target.id === "selCompare" && e.target.value) location.hash = `#/compare/${encodeURIComponent(e.target.dataset.first)}/${encodeURIComponent(e.target.value)}`;
 });
+document.addEventListener("keydown", e => { if (e.key === "Escape") $("#info").hidden = true; });
 document.addEventListener("input", e => {
   if (e.target.id !== "poisk") return;
   poisk = e.target.value.toLowerCase().trim(); pokaz();

@@ -273,3 +273,21 @@ details.podr>summary{cursor:pointer;color:var(--zol);letter-spacing:.15em;text-t
 .sovb b{color:#5fd6d9}
 .sovb .chip{margin-left:6px}
 .np{display:block;width:100%;max-width:384px;aspect-ratio:192/36;image-rendering:pixelated;margin:0 0 10px;border:1px solid #080c18}
+/* доступность, избранное и сравнение */
+:focus-visible{outline:2px solid var(--zol);outline-offset:3px}
+.wk>small{color:var(--tiho)}
+.tbl th button{background:none;border:0;color:inherit;font:inherit;letter-spacing:inherit;cursor:pointer;padding:0;text-align:inherit}
+.plit-wrap,.kar-wrap{position:relative;display:flex;min-width:0}
+.plit-wrap>.plit,.kar-wrap>.kar{flex:1;min-width:0;height:100%}
+.favkn{position:absolute;z-index:2;top:3px;right:3px;width:34px;height:34px;border:0;background:#07080dcc;color:var(--tiho);font:22px/1 inherit;cursor:pointer;padding:0}
+.favkn.on{color:var(--zol)}
+.setk{position:relative}.setk-h{padding-right:30px}
+.wactions{display:flex;align-items:center;gap:8px;margin:6px 0}.wactions>.favkn{position:static;background:var(--k);border:1px solid var(--rama)}
+.cmp-pick{align-items:flex-start;flex-direction:column}.cmp-pick select{width:100%;background:var(--k);color:var(--tx);border:1px solid var(--rama);padding:8px;font:inherit}
+.cmp-head,.cmp-grid{display:grid;grid-template-columns:minmax(100px,.55fr) repeat(2,minmax(0,1fr));gap:1px;background:var(--rama);border:1px solid var(--rama)}
+.cmp-head{background:transparent;border:0;gap:8px}.cmp-head .kar{min-width:0}
+.cmp-grid>div,.cmp-grid>p{min-width:0;margin:0;padding:7px 9px;background:var(--k);overflow-wrap:anywhere}
+.cmp-grid .cmp-label{color:var(--tiho)}
+.cmp-grid .cmp-best{background:#17301d;color:#9be69b;box-shadow:inset 3px 0 #7fd47f}
+.cmp-perks{display:flex;flex-direction:column;gap:2px}.cmp-perks .perk{align-items:flex-start}.cmp-perks .pi{margin-top:1px}
+@media (max-width:600px){.cmp-head .kar{flex-direction:column;align-items:flex-start}.cmp-head .ic{width:48px;height:48px}.cmp-head .ic img{width:42px;height:42px}.cmp-grid{grid-template-columns:minmax(86px,.55fr) repeat(2,minmax(0,1fr))}.cmp-grid>div,.cmp-grid>p{padding:6px;font-size:11px}}

@@ -181,7 +181,7 @@ const BFOK = {};
 const ikKol = (slot, pole, title, ids, cur, fixed) => { ids = ids.filter(x => !/:(null|undefined)?$/.test(x));
   return `<div class="wk${ids.length > 14 ? " shir" : ids.length > 8 ? " dve" : ""}"><b>${title}</b><div class="wk-g">${ids.map(id => {
     const v = id.split(":").slice(1).join(":"), n = pName(id), sel = !fixed && cur === v, d = BSOV.has(id);
-    return `<button class="pk${sel ? " vyb" : ""}${d ? " sov" : ""}${fixed ? " fix" : ""}" ${fixed ? `data-bfix="${slot}|${id}"` : `data-bw="${slot}|${pole}|${v}"`} title="${esc(n)}">${pi(id)}${d ? "<i>◆</i>" : ""}</button>`; }).join("")}</div></div>`; };
+    return `<button class="pk${sel ? " vyb" : ""}${d ? " sov" : ""}${fixed ? " fix" : ""}" ${fixed ? `data-bfix="${slot}|${id}"` : `data-bw="${slot}|${pole}|${v}"`} title="${esc(n)}" aria-label="${esc(n)}">${pi(id)}${d ? "<i>◆</i>" : ""}</button>`; }).join("")}</div></div>`; };
 let BSOV = new Set();
 // все перки, которые сейчас стоят на пушке (для статов и итога)
 function perkiPushki(w) {

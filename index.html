@@ -15,7 +15,7 @@
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://kapitockay.github.io/lightbound-db/og.png">
 <link rel="icon" type="image/png" href="img/wpn_pale_choir.png">
-<link rel="stylesheet" href="app.css?v=19">
+<link rel="stylesheet" href="app.css?v=20">
 </head>
 <body>
 <header>
@@ -27,14 +27,15 @@
     <a href="#/col" data-r="col" data-t="col">Коллекция</a>
     <a href="#/dmg" data-r="dmg" data-t="dmg">Урон</a>
     <a href="#/build" data-r="build" data-t="build">Билд</a>
+    <a href="#/fav" data-r="fav" data-t="fav">Избранное</a>
   </nav>
-  <div id="yazyk"><button data-lang="ru">RU</button><button data-lang="en">EN</button><button data-lang="de">DE</button></div>
+  <div id="yazyk"><button data-lang="ru" aria-label="Русский">RU</button><button data-lang="en" aria-label="English">EN</button><button data-lang="de" aria-label="Deutsch">DE</button></div>
 </header>
 <main id="app"></main>
-<div id="info" hidden></div>
+<div id="info" role="region" aria-live="polite" hidden></div>
 <footer id="podval"></footer>
 <script src="data.js?v=8"></script>
-<script src="build.js?v=15"></script>
-<script src="app.js?v=13"></script>
+<script src="build.js?v=16"></script>
+<script src="app.js?v=14"></script>
 </body>
 </html>
